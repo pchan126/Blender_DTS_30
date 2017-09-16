@@ -1,4 +1,4 @@
-from Nv_VertexCache import *
+from .Nv_VertexCache import *
 
 # TODO: Need to check!
 
@@ -161,13 +161,13 @@ class NvStripInfo:
 
 	def MarkTriangle(self, faceInfo):
 		if self.IsMarked(faceInfo):
-			print "WARNING: strip error!"
+			print("WARNING: strip error!")
 		if self.IsExperiment():
 			faceInfo.m_experimentId = self.m_experimentId
 			faceInfo.m_testStripId = self.m_stripId
 		else:
 			if faceInfo.m_stripId != -1:
-				print "WARNING: strip error!"
+				print("WARNING: strip error!")
 			faceInfo.m_experimentId = -1
 			faceInfo.m_stripId = self.m_stripId
 
@@ -401,7 +401,7 @@ class NvStripifier:
 		# NOTE: do we use the self.indices?!
 		numIndices = len(indices)
 		if numIndices < 2:
-			print "WARNING: Strip Error"
+			print("WARNING: Strip Error")
 
 		v0 = indices[numIndices-2]
 		v1 = indices[numIndices-1]
@@ -413,21 +413,21 @@ class NvStripifier:
 		if (fv0 != v0) and (fv0 != v1):
 			if ((fv1 != v0) and (fv1 != v1)) or ((fv2 != v0) and (fv2 != v1)):
 				# TODO: put into dump file
-				print "HMM"
+				print("HMM")
 				# 0,"GetNextIndex: Triangle doesn't have all of its vertices\n"
 				# 0,"GetNextIndex: Duplicate triangle probably got us derailed\n"
 			return fv0
 		if (fv1 != v0) and (fv1 != v1):
 			if ((fv0 != v0) and (fv0 != v1)) or ((fv2 != v0) and (fv2 != v1)):
 				# TODO: put into dump file
-				print "HMM"
+				print("HMM")
 				# 0,"GetNextIndex: Triangle doesn't have all of its vertices\n"
 				# 0,"GetNextIndex: Duplicate triangle probably got us derailed\n"
 			return fv1
 		if (fv2 != v0) and (fv2 != v1):
 			if ((fv0 != v0) and (fv0 != v1)) or ((fv1 != v0) and (fv1 != v1)):
 				# TODO: put into dump file
-				print "HMM"
+				print("HMM")
 				# 0,"GetNextIndex: Triangle doesn't have all of its vertices\n"
 				# 0,"GetNextIndex: Duplicate triangle probably got us derailed\n"
 			return fv2
@@ -457,7 +457,7 @@ class NvStripifier:
 
 			else:
 				if infoIter.m_v1 != v0:
-					print "WARNING: Strip Error"
+					print("WARNING: Strip Error")
 				if infoIter.m_v0 == v1:
 					return infoIter
 				else:
@@ -467,7 +467,7 @@ class NvStripifier:
 	def FindOtherFace(self, edgeInfos, v0, v1, faceInfo):
 		edgeInfo = self.FindEdgeInfo(edgeInfos, v0, v1)
 		if edgeInfo == None:
-			print "WARNING: Strip Error"
+			print("WARNING: Strip Error")
 
 		if edgeInfo.m_face0 == faceInfo:
 			return edgeInfo.m_face1
@@ -567,7 +567,7 @@ class NvStripifier:
 
 				# otherwise, we shall now try experiments for starting on the 01,12, and 20 edges
 				if nextFace.m_stripId >= 0:
-					print "WARNING: strip error!"
+					print("WARNING: strip error!")
 
 				# build the strip off of this face's 0-1 edge
 				edge01 = self.FindEdgeInfo(allEdgeInfos, nextFace.m_v0, nextFace.m_v1)
@@ -964,7 +964,7 @@ class NvStripifier:
 				else:
 					if edgeInfo01.m_face1 != None:
 						# TODO: not an assert...dump in dump file or something...
-						print "BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences"
+						print("BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences")
 					else:
 						edgeInfo01.m_face1 = faceInfo
 
@@ -986,7 +986,7 @@ class NvStripifier:
 				else:
 					if edgeInfo12.m_face1 != None:
 						# TODO: not an assert...dump in dump file or something...
-						print "BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences"
+						print("BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences")
 					else:
 						edgeInfo12.m_face1 = faceInfo
 
@@ -1008,7 +1008,7 @@ class NvStripifier:
 				else:
 					if edgeInfo20.m_face1 != None:
 						# TODO: not an assert...dump in dump file or something...
-						print "BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences"
+						print("BuildStripifyInfo: > 2 triangles on an edge... uncertain consequences")
 					else:
 						edgeInfo20.m_face1 = faceInfo
 

@@ -375,7 +375,7 @@ class MaterialControlsClass:
 
 		# add the materials to the list
 		startEvent = 40
-		for mat in materials.keys():
+		for mat in list(materials.keys()):
 			self.guiMaterialList.addControl(self.createMaterialListItem(mat, startEvent))
 			startEvent += 1
 

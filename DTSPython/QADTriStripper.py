@@ -28,11 +28,11 @@ Quick and Dirty Triangle Stripper, uses a simple greedy heuristic.
 
 import copy
 import re
-import Torque_Util
+from . import Torque_Util
 try:
 	from bisect import *
 except:
-	from pyBisect import *
+	from .pyBisect import *
 
 
 def indent(string, spaces):
@@ -70,9 +70,9 @@ class Edge:
 	
 	def __str__(self):
 		retVal = "\nEdge:"
-		retVal += "\n Vertex A:" + `self.A`
-		retVal += "\n Vertex B:" + `self.B`
-		retVal += "\n triIndex:" + `self.triIndex`
+		retVal += "\n Vertex A:" + repr(self.A)
+		retVal += "\n Vertex B:" + repr(self.B)
+		retVal += "\n triIndex:" + repr(self.triIndex)
 		return retVal
 
 class Triangle:
@@ -105,7 +105,7 @@ class Triangle:
 		retVal += indent(self.edge[1], 2)
 		retVal += "\n Edge 2:"
 		retVal += indent(self.edge[2], 2)
-		retVal += "\n triIndex:" + `self.triIndex`
+		retVal += "\n triIndex:" + repr(self.triIndex)
 		return retVal
 		
 class TriNode:
@@ -257,8 +257,8 @@ class QADTriStripper:
 			self.strips[-1][0].append(self.triList[orphan].vertIndex[1])
 			self.strips[-1][0].append(self.triList[orphan].vertIndex[2])
 			
-		Torque_Util.dump_writeln("    Created " + `len(self.strips)-len(orphans)` + " strips.")
-		Torque_Util.dump_writeln("     with " + `len(orphans)` + " trianges left over.")
+		Torque_Util.dump_writeln("    Created " + repr(len(self.strips)-len(orphans)) + " strips.")
+		Torque_Util.dump_writeln("     with " + repr(len(orphans)) + " trianges left over.")
 
 	
 	def MakeStrip(self, node):

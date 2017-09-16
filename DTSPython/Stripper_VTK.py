@@ -23,10 +23,10 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-from Torque_Util import *
+from .Torque_Util import *
 import math
 import copy
-import Dts_Stripper
+from . import Dts_Stripper
 
 # Try getting VTK
 try:
@@ -141,7 +141,7 @@ class VTKStripper(Dts_Stripper.Stripper):
 					# Or we have ended adding strips
 					val = stripData.GetValue(ind)
 					if (val > maxInds) or (len(nstrips) == newmesh.GetNumberOfStrips()) or (val < 3):
-						print "   DEBUG: val is",val, "Breaking! ", Stripper.maxStripSize, ind
+						print("   DEBUG: val is",val, "Breaking! ", Stripper.maxStripSize, ind)
 						# ^^ ideally, this shouldn't happen
 						break
 					else:

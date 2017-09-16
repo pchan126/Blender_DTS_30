@@ -27,10 +27,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	DTSPython Module Init Code
 '''
 
-from Torque_Util import *
-from Dts_Stream import *
-from Dts_Stripper import *
-from Dts_Mesh import *
-from Dts_TranslucentSort import *
-from Dts_Shape import *
-from pyBisect import *
+from .Torque_Util import *
+from .Dts_Stream import *
+from .Dts_Stripper import *
+from .Dts_Mesh import *
+from .Dts_TranslucentSort import *
+from .Dts_Shape import *
+from .pyBisect import *

@@ -103,7 +103,7 @@ class nodeInfoClass:
 		# is the node in a layer that is exported?
 		goodLayer = False
 		obj = self.getBlenderObj()
-		for dlName in DtsGlobals.Prefs['DetailLevels'].keys():
+		for dlName in list(DtsGlobals.Prefs['DetailLevels'].keys()):
 			dl = DtsGlobals.Prefs['DetailLevels'][dlName]			
 			for layer in obj.layers:
 				if layer in dl:
@@ -272,7 +272,7 @@ class SceneInfoClass:
 		# set up detail levels
 		if n.isExportable and n.hasGeometry:
 			# add mesh node info to detail levels
-			for dlName in DtsGlobals.Prefs['DetailLevels'].keys():
+			for dlName in list(DtsGlobals.Prefs['DetailLevels'].keys()):
 				dl = DtsGlobals.Prefs['DetailLevels'][dlName]
 				for layer in obj.layers:
 					if layer in dl:
@@ -288,11 +288,11 @@ class SceneInfoClass:
 			tempBones = {}
 			# add armature bones if needed
 			armDb = obj.getData()
-			for bone in filter(lambda x: x.parent==None, armDb.bones.values()):
+			for bone in [x for x in list(armDb.bones.values()) if x.parent==None]:
 				self.__addBoneTree(obj, n, bone, armDb, n, tempBones)
 
 		# add child trees
-		for child in filter(lambda x: x.parent==obj, Blender.Scene.GetCurrent().objects):
+		for child in [x for x in Blender.Scene.GetCurrent().objects if x.parent==obj]:
 			parentBoneName = child.getParentBoneName()
 			if (obj.getType() == 'Armature') and (parentBoneName != None):					
 				parentNode = tempBones[parentBoneName]
@@ -308,7 +308,7 @@ class SceneInfoClass:
 		boneDictionary[boneOb.name] = n
 		self.allThings.append(n)
 		# add child trees
-		for bone in filter(lambda x: x.parent==boneOb, armDb.bones.values()):					
+		for bone in [x for x in list(armDb.bones.values()) if x.parent==boneOb]:					
 			self.__addBoneTree(blenderObj, n, bone, armDb, armParentNI, boneDictionary)
 
 	# for debugging
@@ -316,21 +316,21 @@ class SceneInfoClass:
 		pad = ""
 		for i in range(0, indent):
 			pad += " "
-		print pad+"|"
-		print pad+"Node:", ni.dtsNodeName, "(",ni.blenderObjName,")"
+		print(pad+"|")
+		print(pad+"Node:", ni.dtsNodeName, "(",ni.blenderObjName,")")
 		try:
 			nn = ni.getGoodNodeParentNI().dtsNodeName
-			print pad+"Parent:", nn,"(",ni.getGoodNodeParentNI().blenderObjName,")"
-		except: print pad+"No Parent."
+			print(pad+"Parent:", nn,"(",ni.getGoodNodeParentNI().blenderObjName,")")
+		except: print(pad+"No Parent.")
 		indent += 3
-		for nic in filter(lambda x: x.getGoodNodeParentNI()==ni, self.nodes.values()):
+		for nic in [x for x in list(self.nodes.values()) if x.getGoodNodeParentNI()==ni]:
 			self.__printTree(nic, indent)
 
 
 	# adds parent stacks to armature nodes for later lookup (used when tranforming bones from
 	# armature space to world space)
 	def __addArmatureParentStacks(self):
-		for armNI in self.armatures.values():
+		for armNI in list(self.armatures.values()):
 			armNI.parentStack = []
 			armNIParent = armNI.parentNI
 			while armNIParent != None:
@@ -342,24 +342,24 @@ class SceneInfoClass:
 		#startTime = Blender.sys.time()
 		
 		# go through each Blender object and bone and add subtrees (construct allThings list)
-		for obj in filter(lambda x: x.parent==None, Blender.Scene.GetCurrent().objects):
+		for obj in [x for x in Blender.Scene.GetCurrent().objects if x.parent==None]:
 			if obj.parent == None:
 				self.__addTree(obj, None)
 		
 		# nodes that should be exported
-		nodeExportList = filter(lambda x: x.isExportable, self.allThings)
+		nodeExportList = [x for x in self.allThings if x.isExportable]
 
 		# meshes that should be exported
-		meshExportList = filter(lambda x: (x.hasGeometry==True) and (x.isExportable==True), self.allThings)
+		meshExportList = [x for x in self.allThings if (x.hasGeometry==True) and (x.isExportable==True)]
 		self.meshExportList = meshExportList
 		
 		# construct dts objects
 		
-		dlNames = DtsGlobals.Prefs['DetailLevels'].keys()
+		dlNames = list(DtsGlobals.Prefs['DetailLevels'].keys())
 
 		# check that every mesh within a given detail level has a unique dts object name
 		for dlName in dlNames:
-			dlMeshes = filter(lambda x: dlName in x.detailLevels, meshExportList)
+			dlMeshes = [x for x in meshExportList if dlName in x.detailLevels]
 			found = {}
 			for meshNI in dlMeshes:
 				dtsObjName = meshNI.dtsObjName
@@ -369,7 +369,7 @@ class SceneInfoClass:
 					found[dtsObjName] = []
 				found[dtsObjName].append(meshNI)
 			
-			for dtsObjName in found.keys():
+			for dtsObjName in list(found.keys()):
 				foundList = found[dtsObjName]
 				if len(foundList) > 1:
 					dtsObjName = foundList[0].dtsObjName
@@ -667,7 +667,7 @@ class SceneInfoClass:
 	# get the names of nodes in all exported layers
 	def getAllNodeNames(self):
 		temp = []
-		for ni in self.nodes.values():
+		for ni in list(self.nodes.values()):
 			temp.append(ni.dtsNodeName)
 		temp.sort()
 		return temp
@@ -675,7 +675,7 @@ class SceneInfoClass:
 	# get the names of all object generated nodes
 	def getObjectNodeNames(self):
 		temp = []
-		nodes = filter(lambda x: (x.blenderType=='object'), self.nodes.values())
+		nodes = [x for x in list(self.nodes.values()) if (x.blenderType=='object')]
 		for ni in nodes:
 			temp.append(ni.dtsNodeName)
 		temp.sort()
@@ -684,7 +684,7 @@ class SceneInfoClass:
 	# get the names of all bone generated nodes
 	def getBoneNodeNames(self):
 		temp = []
-		nodes = filter(lambda x: (x.blenderType=='bone'), self.nodes.values())
+		nodes = [x for x in list(self.nodes.values()) if (x.blenderType=='bone')]
 		for ni in nodes:
 			temp.append(ni.dtsNodeName)
 		temp.sort()
@@ -801,19 +801,19 @@ class SceneInfoClass:
 		
 		# discard sequences without both a start and end frame
 		# and trim extra end frames if the user is being snarky :-)
-		for seqName in sequences.keys():
+		for seqName in list(sequences.keys()):
 			if len(sequences[seqName]) < 2:
 				del sequences[seqName]
 				continue
 			sequences[seqName] = sequences[seqName][0:2]
 		
 		# discard sequences with zero or negative frames
-		for seqName in sequences.keys():
+		for seqName in list(sequences.keys()):
 			if sequences[seqName][1] - sequences[seqName][0] < 1:
 				del sequences[seqName]
 
 		# look for animation triggers within each frame range
-		for seqName in sequences.keys():
+		for seqName in list(sequences.keys()):
 			startFrame, endFrame = sequences[seqName][0], sequences[seqName][1]
 			# check all frames in range
 			for fr in range(startFrame, endFrame + 1):				
@@ -1018,7 +1018,7 @@ class SceneInfoClass:
 		
 		# build retval
 		retVal = []
-		for stripName in allStrips.keys():
+		for stripName in list(allStrips.keys()):
 			startFrame, endFrame = allStrips[stripName]
 			retVal.append((stripName, startFrame, endFrame))
 		
@@ -1046,7 +1046,7 @@ class SceneInfoClass:
 		nextFrame = 2
 		for objNodeName in objNodeNames:
 			bObjs.append(self.nodes[objNodeName].getBlenderObj())
-		for action in actions.values():
+		for action in list(actions.values()):
 			# calculate strip parameters
 			sf = nextFrame
 			ef = sf + self.__getActionLength(action.name)
@@ -1091,7 +1091,7 @@ class SceneInfoClass:
 	
 	# gets dts object names (unique mesh names across all detail levels, minus trailing extension)
 	def getDtsObjectNames(self):
-		retval = self.DTSObjects.keys()
+		retval = list(self.DTSObjects.keys())
 		retval.sort()
 		return retval
 		'''
@@ -1109,7 +1109,7 @@ class SceneInfoClass:
 		sortedDLs = DtsGlobals.Prefs.getSortedDLNames()
 		# first build an unsorted list of the highest detail level NIs for each dts object.
 		unsortedDTSObjs = []
-		for objDLs in self.DTSObjects.values():
+		for objDLs in list(self.DTSObjects.values()):
 			for dl in sortedDLs:
 				highest = objDLs[dl]
 				if highest != None: break
@@ -1118,7 +1118,7 @@ class SceneInfoClass:
 				unsortedDTSObjs.append(highest)
 		
 		# skinned meshes don't get a node, so we have to process them separately.
-		extras = filter(lambda x: x not in self.nodes.values(), unsortedDTSObjs)
+		extras = [x for x in unsortedDTSObjs if x not in list(self.nodes.values())]
 		
 		sortedList = []
 		sortedList = self.__walkDtsObjTree(None, sortedList, unsortedDTSObjs, extras)
@@ -1130,9 +1130,9 @@ class SceneInfoClass:
 		
 	def __walkDtsObjTree(self, rootObj, sortedList, unsortedDTSObjs, extras):
 		# get all objects that are children of the current root object		
-		thisLevel = filter(lambda x: x.getExportLayerNodeParentNI() == rootObj, self.nodes.values())
+		thisLevel = [x for x in list(self.nodes.values()) if x.getExportLayerNodeParentNI() == rootObj]
 		# add skinned meshes that are on this level
-		for ni in filter(lambda x: x.getExportLayerNodeParentNI() == rootObj, extras):
+		for ni in [x for x in extras if x.getExportLayerNodeParentNI() == rootObj]:
 			thisLevel.append(ni)
 		# early out if there are no children
 		#if len(thisLevel) == 0: return sortedList
@@ -1182,7 +1182,7 @@ class SceneInfoClass:
 	def getVGroupTransDict(self):
 		retVal = {}
 		# find all exportable bone nodes
-		for ni in self.nodes.values():
+		for ni in list(self.nodes.values()):
 			if ni.blenderType != "bone" or ni.isBanned(): continue
 			retVal[ni.originalBoneName] = ni.dtsNodeName
 		return retVal
@@ -1196,7 +1196,7 @@ class SceneInfoClass:
 
 	# Gets the children of an object
 	def getChildren(self, obj):
-		return filter(lambda x: x.parent==obj, Blender.Scene.GetCurrent().objects)
+		return [x for x in Blender.Scene.GetCurrent().objects if x.parent==obj]
 
 	# Gets all the children of an object (recursive)
 	def getAllChildren(self, obj):

@@ -22,9 +22,9 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
-from Dts_Stream import *
-from Torque_Util import *
-import Dts_Stripper
+from .Dts_Stream import *
+from .Torque_Util import *
+from . import Dts_Stripper
 import math
 import copy
 
@@ -992,10 +992,10 @@ class DtsMesh:
 		new primitives / clusters / vertexes into the mesh data
 		'''
 		self.alwaysWriteDepth = alwaysWriteDepth
-		print "      Sorting : WD(%d) NB(%d) MD(%d) ZU(%d), ZD(%d)" % (alwaysWriteDepth, numBigFaces, maxDepth, zLayerUp, zLayerDown)
+		print("      Sorting : WD(%d) NB(%d) MD(%d) ZU(%d), ZD(%d)" % (alwaysWriteDepth, numBigFaces, maxDepth, zLayerUp, zLayerDown))
 		self.generateClusters(numBigFaces, maxDepth, zLayerUp, zLayerDown)
-		print "      Sorting : Done, Generated %d clusters" % len(self.clusters)
+		print("      Sorting : Done, Generated %d clusters" % len(self.clusters))
 
 
-import Dts_TranslucentSort
+from . import Dts_TranslucentSort
 # End of file

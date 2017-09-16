@@ -255,7 +255,7 @@ class BlenderShape(DtsShape):
 					mesh_data.addVertGroup(group)
 			
 			# recreate vertex groups
-			for vIdx in influences.keys():
+			for vIdx in list(influences.keys()):
 				for inf in influences[vIdx]:
 					group, weight = inf
 					mesh_data.assignVertsToGroup(group, [vIdx], weight, Blender.Mesh.AssignModes.ADD)
@@ -271,13 +271,13 @@ class BlenderShape(DtsShape):
 		elif hasArmatureDeform and (hasModifiers or (o.getType() in DtsGlobals.needDisplayDataTypes)):
 			# we can't support this, since the number of verts in the mesh may have been changed
 			# by one if the modifiers, it is impossible to reconstruct vertex groups.
-			print "Can't reconstruct vertex group for skinned mesh with additional modifiers!"
+			print("Can't reconstruct vertex group for skinned mesh with additional modifiers!")
 			mesh_data = o.getData(False,True)
 			temp_obj = None
 
 		else:
 			# unknown mesh configuration?!
-			print "Unknown mesh configuration!!!"
+			print("Unknown mesh configuration!!!")
 
 		# Get Object's Matrix
 		mat = self.collapseBlenderTransform(o)
@@ -690,7 +690,7 @@ class BlenderShape(DtsShape):
 		cMin = []
 		cMax = []
 		nnames = []
-		for child in filter(lambda x: x.getGoodNodeParentNI() == rootNode, self.transformUtil.nodes.values()):
+		for child in [x for x in list(self.transformUtil.nodes.values()) if x.getGoodNodeParentNI() == rootNode]:
 			nnames.append(child.dtsNodeName)
 			start, end, warning = self.getMinMax(child, nodeOrder, nodeOrderDict, warning)
 			if start == None and end == None: continue
@@ -752,11 +752,11 @@ class BlenderShape(DtsShape):
 			#	trees on the same level of the overall tree.
 
 			# Test Rule #1
-			for nodeInfo in self.transformUtil.nodes.values():
+			for nodeInfo in list(self.transformUtil.nodes.values()):
 				if nodeInfo.getGoodNodeParentNI() != None:
-					if nodeInfo.dtsNodeName in nodeOrderDict.keys()\
+					if nodeInfo.dtsNodeName in list(nodeOrderDict.keys())\
 					and nodeInfo.getGoodNodeParentNI() != None\
-					and nodeInfo.getGoodNodeParentNI().dtsNodeName in nodeOrderDict.keys():
+					and nodeInfo.getGoodNodeParentNI().dtsNodeName in list(nodeOrderDict.keys()):
 						if nodeOrderDict[nodeInfo.dtsNodeName] < nodeOrderDict[nodeInfo.getGoodNodeParentNI().dtsNodeName]:
 							Torque_Util.dump_writeWarning("-\nWarning: Invalid node order, child bone \'%s\' comes before" % nodeInfo.dtsNodeName)
 							Torque_Util.dump_writeln("  parent bone \'%s\' in the NodeOrder text buffer\n-" % nodeInfo.getGoodNodeParentNI().dtsNodeName)
@@ -778,7 +778,7 @@ class BlenderShape(DtsShape):
 
 	# Walks the node tree recursively and returns a list of nodes in natural order
 	def walkNodeTree(self, nodeInfo, nodeOrderList):
-		thisLevel = filter(lambda x: x.getGoodNodeParentNI() == nodeInfo, self.transformUtil.nodes.values())
+		thisLevel = [x for x in list(self.transformUtil.nodes.values()) if x.getGoodNodeParentNI() == nodeInfo]
 		thisLevel.sort(lambda x,y: cmp(x.dtsNodeName, y.dtsNodeName))
 		for child in thisLevel:
 			if not child.isBanned(): nodeOrderList.append(child.dtsNodeName)
@@ -788,9 +788,9 @@ class BlenderShape(DtsShape):
 
 	# Walks the node tree recursively and returns a list of nodes in the specified order, if possible
 	def walkNodeTreeInOrder(self, nodeInfo, nodeOrderDict, nodeOrderList):
-		childList = filter(lambda x: x.getGoodNodeParentNI() == nodeInfo, self.transformUtil.nodes.values())
-		orderedChildList = filter(lambda x: x.dtsNodeName in nodeOrderDict.keys(), childList)
-		extraChildList = filter(lambda x: not (x.dtsNodeName in nodeOrderDict.keys()), childList)
+		childList = [x for x in list(self.transformUtil.nodes.values()) if x.getGoodNodeParentNI() == nodeInfo]
+		orderedChildList = [x for x in childList if x.dtsNodeName in list(nodeOrderDict.keys())]
+		extraChildList = [x for x in childList if not (x.dtsNodeName in list(nodeOrderDict.keys()))]
 		
 		orderedChildList.sort(lambda x, y: cmp(nodeOrderDict[x.dtsNodeName], nodeOrderDict[y.dtsNodeName]))
 		
@@ -809,7 +809,7 @@ class BlenderShape(DtsShape):
 		orderedNodeList = self.createOrderedNodeList()
 		
 		# add armatures to our list
-		for arm in filter(lambda x: x.getType()=='Armature', Blender.Scene.GetCurrent().objects):
+		for arm in [x for x in Blender.Scene.GetCurrent().objects if x.getType()=='Armature']:
 			self.addedArmatures.append(arm)
 		
 		
@@ -1068,7 +1068,7 @@ class BlenderShape(DtsShape):
 				if (armOb.getType() != 'Armature'): continue
 				tempPose = armOb.getPose()
 				armDb = armOb.getData()
-				for bonename in armDb.bones.keys():
+				for bonename in list(armDb.bones.keys()):
 				#for bonename in self.poseUtil.armBones[armOb.name].keys():
 				
 					# reset the bone's transform
@@ -1241,7 +1241,7 @@ class BlenderShape(DtsShape):
 
 	
 	def addSequenceTriggers(self, sequence, unsortedTriggers, nFrames):
-		print "addSequenceTriggers called!!!"
+		print("addSequenceTriggers called!!!")
 		if sequence.firstTrigger == -1:
 			sequence.firstTrigger = len(self.triggers)
 		
@@ -1274,7 +1274,7 @@ class BlenderShape(DtsShape):
 			# [ state(1-32), position(0-1.0), on(True/False) ]
 			if triggers[i][1] <= 1: realPos = 0.0
 			else: realPos = float(triggers[i][1]-1) / (nFrames-1)
-			print "realPos=", realPos
+			print("realPos=", realPos)
 			self.triggers.append(Trigger(triggers[i][0], triggers[i][2], realPos, triggerState[i]))
 		del triggerState
 		sequence.numTriggers += len(triggers)
@@ -1358,7 +1358,7 @@ class BlenderShape(DtsShape):
 				# Make sure we're still in the user defined frame range.
 				if fr <= endFrame:
 					self.objectstates.append(ObjectState(val,0,0))
-					print "appending vis frame with val of:", val
+					print("appending vis frame with val of:", val)
 				# If we're past the user defined frame range, pad out object states
 				# with copies of the good last frame state.
 				else:
@@ -1366,7 +1366,7 @@ class BlenderShape(DtsShape):
 					if val > 1.0: val = 1.0
 					elif val < 0.0: val = 0.0
 					self.objectstates.append(ObjectState(val,0,0))
-					print "appending vis frame with val of:", val
+					print("appending vis frame with val of:", val)
 							
 		sequence.has_vis = True
 		return sequence
@@ -1546,7 +1546,7 @@ class BlenderShape(DtsShape):
 		
 		# Write out IFL File
 		# Now we can dump each frame
-		for seqName in self.preferences['Sequences'].keys():
+		for seqName in list(self.preferences['Sequences'].keys()):
 			seqPrefs = self.preferences['Sequences'][seqName]
 			if seqPrefs['IFL']['Enabled'] and validateIFL(seqName, seqPrefs) and seqPrefs['IFL']['WriteIFLFile']:				
 				iflName = self.preferences.getTextPortion(seqPrefs['IFL']['Material'])

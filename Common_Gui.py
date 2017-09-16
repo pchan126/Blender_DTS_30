@@ -167,10 +167,10 @@ class BasicControl:
 		if self.resize_callback: self.resize_callback(self, newwidth, newheight)
 
 	def addControl(self, control):
-		print "Error: Control does not support nested items!"
+		print("Error: Control does not support nested items!")
 	
 	def removeControl(self, control):
-		print "Error: Control does not support nested items!"
+		print("Error: Control does not support nested items!")
 		return False
 
 class BasicFrame(BasicControl):
@@ -1578,13 +1578,13 @@ def testGuiCallback(control):
 	global testGuiButton, testGuiMenu, testGuiText
 	global testGuiOtherButton, testGuiOtherMenu, testGuiOtherText
 	if control.evt == 5:
-		print "Button selected! item index of menu = %d" % testGuiMenu.itemIndex
+		print("Button selected! item index of menu = %d" % testGuiMenu.itemIndex)
 	elif control.evt == 10:
-		print "Menu item %d selected!" % control.itemIndex
+		print("Menu item %d selected!" % control.itemIndex)
 	elif control.evt == 15:
-		print "Other button selected! item index of other menu = %d" % testGuiOtherMenu.itemIndex		
+		print("Other button selected! item index of other menu = %d" % testGuiOtherMenu.itemIndex)		
 	elif control.evt == 20:
-		print "Other menu item %d selected!" % control.itemIndex
+		print("Other menu item %d selected!" % control.itemIndex)
 
 def testGuiResizeCallback(control, newwidth, newheight):
 	global testGuiButton, testGuiMenu, testGuiText
@@ -1632,11 +1632,11 @@ def testGuiResizeCallback(control, newwidth, newheight):
 		
 def testGuiListCallback(control):
 	global testGuiListContainer
-	print "Callback: remove %s" % control.name
+	print("Callback: remove %s" % control.name)
 	testGuiListContainer.removeControl(control)
 
 def testGuiExit():
-	print "Gui Exited successfully."
+	print("Gui Exited successfully.")
 
 def testGui():
 	global testGuiButton, testGuiMenu, testGuiText

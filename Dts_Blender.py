@@ -100,8 +100,8 @@ def doExport(progressBar):
 		# add visible detail levels
 		sortedObjectNIs = SceneInfo.getSortedDtsObjectNames()
 		if len(SceneInfo.DTSObjects) != len(sortedObjectNIs):
-			print "sortedObjectNIs=", sortedObjectNIs
-			print "PANIC!!!! This should never hapen!"			
+			print("sortedObjectNIs=", sortedObjectNIs)
+			print("PANIC!!!! This should never hapen!")			
 			
 		Shape.addAllDetailLevels(SceneInfo.DTSObjects, sortedObjectNIs)
 		
@@ -143,7 +143,7 @@ def doExport(progressBar):
 				break
 
 		# Process sequences
-		seqKeys = Prefs['Sequences'].keys()
+		seqKeys = list(Prefs['Sequences'].keys())
 		if len(seqKeys) > 0:
 			progressBar.pushTask("Adding Sequences..." , len(seqKeys*4), 0.8)
 			for seqName in seqKeys:
@@ -349,7 +349,7 @@ def export():
 	# refresh prefs
 	
 	Torque_Util.dump_writeln("Exporting...")
-	print "Exporting..."
+	print("Exporting...")
 	# switch out of edit mode if we are in edit mode
 	Window.EditMode(0)
 
@@ -378,7 +378,7 @@ def export():
 	
 	if Torque_Util.numErrors > 0 or Torque_Util.numWarnings > 0:
 		message = ("Export finished with %i error(s) and %s warning(s). Read the log file for more information." % (Torque_Util.numErrors, Torque_Util.numWarnings))
-		print message
+		print(message)
 		if Prefs["ShowWarningErrorPopup"]:
 			message +=  "%t|Continue|Do not show this message again"
 			opt = Blender.Draw.PupMenu(message)
@@ -389,7 +389,7 @@ def export():
 		Torque_Util.numWarnings = 0
 		Torque_Util.numErrors = 0
 	else:
-		print "Finished.  See generated log file for details."
+		print("Finished.  See generated log file for details.")
 		
 		
 		

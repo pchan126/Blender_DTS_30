@@ -23,7 +23,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-from UserAnimBase import *
+from .UserAnimBase import *
 from DtsSceneInfo import *
 import Blender
 
@@ -206,7 +206,7 @@ class SeqCommonControlsClass(SeqControlsClassBase):
 			del retval
 			return
 
-		print "PupBlock returned", retval
+		print("PupBlock returned", retval)
 
 		# convert gui object values to regular vars
 		seqName = str(text.val)
@@ -239,7 +239,7 @@ class SeqCommonControlsClass(SeqControlsClassBase):
 		# confirm delete
 		message = "Delete Sequence \'" + seqName +"\'?%t|Yes, delete the sequence|Cancel"
 		x = Blender.Draw.PupMenu(message)
-		print "x=", x
+		print("x=", x)
 		if x == 1:
 			# delete the sequence
 			DtsGlobals.SceneInfo.delSeqMarkers(seqName)

@@ -38,16 +38,16 @@ from Dts_Blender import export
 
 
 # import GUI control pages
-from SequenceProperties import *
-from SequenceOptions import *
-from VisAnim import *
-from IFLAnim import *
-from Materials import *
-from ShapeOptions import *
-from DetailLevels import *
-from Nodes import *
-from General import *
-from About import *
+from .SequenceProperties import *
+from .SequenceOptions import *
+from .VisAnim import *
+from .IFLAnim import *
+from .Materials import *
+from .ShapeOptions import *
+from .DetailLevels import *
+from .Nodes import *
+from .General import *
+from .About import *
 
 
 

@@ -487,7 +487,7 @@ class TranslucentSort:
 	
 		# make sure we got here legitimately
 		if math.fabs(k0-k) >= PlaneF.EPSILON and math.fabs(k1-k) >= PlaneF.EPSILON and math.fabs(k2-k) >= PlaneF.EPSILON:
-			print "TODO: ASSERT"
+			print("TODO: ASSERT")
 	
 		# find the odd man out (the vertex that is on the plane)
 		rogue
@@ -498,7 +498,7 @@ class TranslucentSort:
 		elif math.fabs(k2-k) < PlaneF.EPSILON:
 			rogue = 2
 		else:
-			print "TODO: ASSERT"
+			print("TODO: ASSERT")
 	
 		# re-order verts so that rogue vert is first vert
 		idx0 = self.mIndices[self.mFaces[faceIndex].firstElement + ((rogue+0)%3)]
@@ -655,17 +655,17 @@ class TranslucentSort:
 				if self.backSort.faceInfoList[i].used or self.backSort.faceInfoList[cutFace].isBehindMe[i]:
 					continue
 				if self.backSort.faceInfoList[cutFace].isCutByMe[i]:
-					print "TODO: Assert" #  doh, perform hard assert :(...
+					print("TODO: Assert") #  doh, perform hard assert :(...
 				
 				if self.backSort.faceInfoList[cutFace].isCoplanarWithMe[i] or cutFace==i:
 					if self.backSort.faceInfoList[cutFace].normal.dot(backsort.faceInfoList[i].normal) > 0.0:
 						continue
 				elif not self.backSort.faceInfoList[cutFace].isInFrontOfMe[i] and cutFace != i:
-					print "TODO: Assert"
+					print("TODO: Assert")
 				disableSet[i] = True
 			
 			if not allSet(disableSet):
-				print "TODO: Assert"
+				print("TODO: Assert")
 			
 			self.backSort.clearFaces(disableSet)
 			self.backSort.sort()
@@ -688,18 +688,18 @@ class TranslucentSort:
 				if self.frontSort.faceInfoList[i].used or self.frontSort.faceInfoList[cutFace].isInFrontOfMe[i]:
 					continue
 				if self.frontSort.faceInfoList[cutFace].isCutByMe[i]:
-					print "TODO: Assert" # doh, perform hard assert...
+					print("TODO: Assert") # doh, perform hard assert...
 	
 				if self.frontSort.faceInfoList[cutFace].isCoplanarWithMe[i] or cutFace==i:
 					if frontSort.faceInfoList[cutFace].normal.dot(frontSort.faceInfoList[i].normal)>0.0:
 						continue
 				elif not frontSort.faceInfoList[cutFace].isBehindMe[i] and i!= cutFace:
-					print "TODO: Assert" 
+					print("TODO: Assert") 
 	
 				disableSet[i] = True
 	
 			if not allSet(disableSet):
-				print "TODO: Assert" 
+				print("TODO: Assert") 
 	
 			self.frontSort.clearFaces(disableSet)
 	
@@ -964,6 +964,6 @@ class TranslucentSort:
 		else:
 			clusters.pop(-1)
 
-from Torque_Util import *
-from Dts_Mesh import Cluster, DtsMesh, Primitive
-from Dts_Stream import *
+from .Torque_Util import *
+from .Dts_Mesh import Cluster, DtsMesh, Primitive
+from .Dts_Stream import *

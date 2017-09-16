@@ -61,7 +61,7 @@ tracebackImported = True
 try:
 	import traceback
 except:
-	print "Could not import exception traceback module."
+	print("Could not import exception traceback module.")
 	tracebackImported = False
 
 

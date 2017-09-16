@@ -199,9 +199,9 @@ def getScaledIpoNames():
 		ipoName = ipo.name
 		
 		# determine IPO type
-		if Blender.Ipo.PO_SCALEX in ipo.curveConsts.values():
+		if Blender.Ipo.PO_SCALEX in list(ipo.curveConsts.values()):
 			curveConsts = [Blender.Ipo.PO_SCALEX, Blender.Ipo.PO_SCALEY, Blender.Ipo.PO_SCALEZ]
-		elif Blender.Ipo.OB_SCALEX in ipo.curveConsts.values():
+		elif Blender.Ipo.OB_SCALEX in list(ipo.curveConsts.values()):
 			curveConsts = [Blender.Ipo.OB_SCALEX, Blender.Ipo.OB_SCALEY, Blender.Ipo.OB_SCALEZ]
 		else:
 			# ipo is not of interest
@@ -266,15 +266,15 @@ def saveIpoScales(scaledIpoNames):
 		ipo = Blender.Ipo.Get(ipoName)
 		
 		# determine ipo type
-		if Blender.Ipo.PO_SCALEX in ipo.curveConsts.values():
+		if Blender.Ipo.PO_SCALEX in list(ipo.curveConsts.values()):
 			savedScales[ipoName]['type'] = 'object'
 			curveConsts = [Blender.Ipo.PO_SCALEX, Blender.Ipo.PO_SCALEY, Blender.Ipo.PO_SCALEZ]
-		elif Blender.Ipo.OB_SCALEX in ipo.curveConsts.values():
+		elif Blender.Ipo.OB_SCALEX in list(ipo.curveConsts.values()):
 			savedScales[ipoName]['type'] = 'pose'
 			curveConsts = [Blender.Ipo.OB_SCALEX, Blender.Ipo.OB_SCALEY, Blender.Ipo.OB_SCALEZ]
 		else:
 			# panic and bail
-			print "This should never happen! Possible data loss!"
+			print("This should never happen! Possible data loss!")
 			# todo - bail
 
 		# save off knot points and handle types
@@ -309,9 +309,9 @@ def removeIpoScales(scaledIpoNames):
 	for ipoName in scaledIpoNames:
 		ipo = Blender.Ipo.Get(ipoName)
 		# determine ipo type
-		if Blender.Ipo.PO_SCALEX in ipo.curveConsts.values():
+		if Blender.Ipo.PO_SCALEX in list(ipo.curveConsts.values()):
 			curveConsts = [Blender.Ipo.PO_SCALEX, Blender.Ipo.PO_SCALEY, Blender.Ipo.PO_SCALEZ]
-		elif Blender.Ipo.OB_SCALEX in ipo.curveConsts.values():
+		elif Blender.Ipo.OB_SCALEX in list(ipo.curveConsts.values()):
 			curveConsts = [Blender.Ipo.OB_SCALEX, Blender.Ipo.OB_SCALEY, Blender.Ipo.OB_SCALEZ]	
 		# remove scale ipos
 		try:ipo[curveConsts[0]] = None
@@ -330,9 +330,9 @@ def removeIpoScales(scaledIpoNames):
 				ob.SizeZ = 1.0
 	
 	# clear bone scales as well
-	for armOb in filter(lambda x: x.type == 'Armature', Blender.Scene.GetCurrent().objects):
+	for armOb in [x for x in Blender.Scene.GetCurrent().objects if x.type == 'Armature']:
 		tempPose = armOb.getPose()
-		for poseBone in tempPose.bones.values():
+		for poseBone in list(tempPose.bones.values()):
 			# reset the bone's transform
 			poseBone.quat = bMath.Quaternion().identity()
 			poseBone.size = bMath.Vector(1.0, 1.0, 1.0)
@@ -346,7 +346,7 @@ def removeIpoScales(scaledIpoNames):
 # restores all scale keys/channels that were previously saved and removed
 def restoreIpoScales(ipoScales):
 
-	for ipoName in ipoScales.keys():
+	for ipoName in list(ipoScales.keys()):
 		
 		ipo = Blender.Ipo.Get(ipoName)
 		# determine type
@@ -421,17 +421,17 @@ class NodeTransformUtil:
 		bindDynamicMethods()
 
 		# bind test methods - todo - rename these
-		for ni in self.nodes.values():
+		for ni in list(self.nodes.values()):
 			ni.bindLocRotMethods()
 
 		# get poses for all armatures in the scene
 		armPoses = {}
-		for armNI in self.armatures.values():
+		for armNI in list(self.armatures.values()):
 			arm = armNI.getBlenderObj()
 			armPoses[arm.name] = arm.getPose()
 
 		# init default scales - need these first, chicken and egg.
-		for ni in self.nodes.values():
+		for ni in list(self.nodes.values()):
 			ni.initRestScaleData(armPoses)
 		
 		self.exportScale = exportScale
@@ -571,7 +571,7 @@ class NodeTransformUtil:
 
 				# get poses for all armatures in the scene
 				armPoses = {}
-				for armNI in self.armatures.values():
+				for armNI in list(self.armatures.values()):
 					arm = armNI.getBlenderObj()
 					armPoses[arm.name] = arm.getPose()
 
@@ -602,7 +602,7 @@ class NodeTransformUtil:
 
 				# get poses for all armatures in the scene
 				armPoses = {}
-				for armNI in self.armatures.values():
+				for armNI in list(self.armatures.values()):
 					arm = armNI.getBlenderObj()
 					armPoses[arm.name] = arm.getPose()
 
@@ -628,7 +628,7 @@ class NodeTransformUtil:
 
 				# get poses for all armatures in the scene
 				armPoses = {}
-				for armNI in self.armatures.values():
+				for armNI in list(self.armatures.values()):
 					arm = armNI.getBlenderObj()
 					armPoses[arm.name] = arm.getPose()
 

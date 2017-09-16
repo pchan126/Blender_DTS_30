@@ -28,10 +28,10 @@ from struct import *
 from array import *
 import sys
 
-import Torque_Util
-from Torque_Util import *
-from Dts_Shape import IflMaterial, dObject, DetailLevel, SubShape, Node, Trigger, ObjectState, Decal, DecalState
-from Dts_Mesh import Cluster, Primitive
+from . import Torque_Util
+from .Torque_Util import *
+from .Dts_Shape import IflMaterial, dObject, DetailLevel, SubShape, Node, Trigger, ObjectState, Decal, DecalState
+from .Dts_Mesh import Cluster, Primitive
 
 ##############################
 # Torque Game Engine
@@ -158,7 +158,7 @@ class DtsStream:
 		if not little_endian():
 			hdr.byteswap()
 		ver = 0
-		ver, totalSize, offset16, offset8 = long(hdr[0]), long(hdr[1]), long(hdr[2]), long(hdr[3])
+		ver, totalSize, offset16, offset8 = int(hdr[0]), int(hdr[1]), int(hdr[2]), int(hdr[3])
 		
 		self.mExporterVersion = ver >> 16
 		ver &= 0xFF

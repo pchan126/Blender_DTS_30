@@ -103,7 +103,7 @@ class prefsClass(dict):
 				# save new prefs
 				self.savePrefs()
 				loadedFromBuffer = False
-				print "Created new preferences."
+				print("Created new preferences.")
 				
 			if loadedFromBuffer:
 				# Load preferences from the text buffer
@@ -116,9 +116,9 @@ class prefsClass(dict):
 					return False
 
 				Prefs = loadPrefs
-				print "Loaded Preferences from text buffer."
+				print("Loaded Preferences from text buffer.")
 		else:
-			print "Loaded Preferences from Blender registry."
+			print("Loaded Preferences from Blender registry.")
 			
 		# store the loaded prefs (if any) in this object
 		self.__initFromDict(Prefs)
@@ -142,7 +142,7 @@ class prefsClass(dict):
 
 	def __initFromDict(self, dictionary):
 		if dictionary == None: return
-		for pair in dictionary.items():
+		for pair in list(dictionary.items()):
 			key, val = pair
 			self[key] = val
 
@@ -180,14 +180,14 @@ class prefsClass(dict):
 			
 	def removeLayerAssignment(self, layerNum):
 		# remove any existing assignment
-		for dl in self['DetailLevels'].values():
+		for dl in list(self['DetailLevels'].values()):
 			for i in range(len(dl)-1, -1, -1):
 				layer = dl[i]
 				if layer == layerNum:
 					del dl[i]
 
 	def renameDetailLevel(self, oldName, newName):
-		if newName != oldName and newName in self['DetailLevels'].keys():
+		if newName != oldName and newName in list(self['DetailLevels'].keys()):
 			message = "A detail level with size of "+str(prefsClass.getTrailingNumber(newName))+" already exists.%t|Cancel"
 			x = Blender.Draw.PupMenu(message)
 			del x
@@ -199,7 +199,7 @@ class prefsClass(dict):
 
 	# returns the detail level name that a given layer is assigned to, or none if not assigned
 	def getLayerAssignment(self, layerNum):
-		for dlName in self['DetailLevels'].keys():
+		for dlName in list(self['DetailLevels'].keys()):
 			dl = self['DetailLevels'][dlName]
 			if layerNum in dl:
 				return dlName
@@ -207,16 +207,16 @@ class prefsClass(dict):
 	# gets the highest LOD visibility number
 	def getHighestLODSize(self, DLType='Detail'):
 		largest = -1
-		for dlName in filter(lambda x: x[0:len(DLType)].lower() == DLType.lower(),  self['DetailLevels'].keys()):
+		for dlName in [x for x in list(self['DetailLevels'].keys()) if x[0:len(DLType)].lower() == DLType.lower()]:
 			size = abs(prefsClass.getTrailingNumber(dlName))
 			if size > largest: largest = size
 		if largest == -1: largest = None
 		return largest
 
 	def getSortedDLNames(self):
-		sortedVisDLKeys = filter(lambda x: x[0:3].lower() == "det", self['DetailLevels'].keys())
-		sortedColDLKeys = filter(lambda x: x[0:3].lower() == "col", self['DetailLevels'].keys())
-		sortedLosDLKeys = filter(lambda x: x[0:3].lower() == "los", self['DetailLevels'].keys())
+		sortedVisDLKeys = [x for x in list(self['DetailLevels'].keys()) if x[0:3].lower() == "det"]
+		sortedColDLKeys = [x for x in list(self['DetailLevels'].keys()) if x[0:3].lower() == "col"]
+		sortedLosDLKeys = [x for x in list(self['DetailLevels'].keys()) if x[0:3].lower() == "los"]
 		
 		sortedVisDLKeys.sort( lambda x,y: cmp(prefsClass.getTrailingNumber(x), prefsClass.getTrailingNumber(y)) )
 		sortedVisDLKeys.reverse()
@@ -265,20 +265,20 @@ class prefsClass(dict):
 		fullName = dlName + str(size)
 		# make sure that the auto sized detail level dosen't already exist
 		# go down by 1/2
-		while fullName in self['DetailLevels'].keys() and size > 1:
+		while fullName in list(self['DetailLevels'].keys()) and size > 1:
 			size = int(round(float(size)/2.0))
 			fullName = dlName + str(size)			
 		# go up by 2x
-		while fullName in self['DetailLevels'].keys() and size < 1024:
+		while fullName in list(self['DetailLevels'].keys()) and size < 1024:
 			if size == 0: size = 1
 			size *= 2
 			fullName = dlName + str(size)
 		# if we still don't have a valid number, just start again from one
 		# and count up until we find a number that's not in use
-		if fullName in self['DetailLevels'].keys():
+		if fullName in list(self['DetailLevels'].keys()):
 			size = 1
 			fullName = dlName + str(size)
-			while fullName in self['DetailLevels'].keys() and size < 1024:
+			while fullName in list(self['DetailLevels'].keys()) and size < 1024:
 				size += 1
 				fullName = dlName + str(size)
 		# we should have a valid size and dl name at this point
@@ -320,7 +320,7 @@ class prefsClass(dict):
 	# returns a list of layers used in detail levels.
 	def getAllDetailLayers(self):
 		retVal = []
-		for dlName in self['DetailLevels'].keys():
+		for dlName in list(self['DetailLevels'].keys()):
 			dl = self['DetailLevels'][dlName]
 			for v in dl:retVal.append(v)
 		return retVal
@@ -331,7 +331,7 @@ class prefsClass(dict):
 
 	# countdown to destruction
 	def __updateDefunctSequenceCountdowns(self):
-		for seqName in self['DefunctSequences'].keys():
+		for seqName in list(self['DefunctSequences'].keys()):
 			seqKey = self['DefunctSequences'][seqName]
 			if seqKey['CountDown'] < 1:
 				del self['DefunctSequences'][seqName]
@@ -341,13 +341,13 @@ class prefsClass(dict):
 	# get the names of defunct/deleted sequences
 	def getDefunctSequenceNames(self):
 		retVal = []
-		for seqName in self['DefunctSequences'].keys():
+		for seqName in list(self['DefunctSequences'].keys()):
 			retVal.append(seqName)
 		return retVal
 	
 	# recover a defunct/deleted sequence key
 	def recoverDefunctSequenceKey(self, seqName):
-		for dsName in self['DefunctSequences'].keys():
+		for dsName in list(self['DefunctSequences'].keys()):
 			dsKey = self['DefunctSequences'][dsName]
 			self['Sequences'][dsName] = dsKey
 			del self['Sequences'][dsName]['CountDown']
@@ -387,7 +387,7 @@ class prefsClass(dict):
 		seqInfo = SceneInfoClass.getSequenceInfo()		
 		
 		# check current sequences against prefs and update prefs
-		for seqName in seqInfo.keys():
+		for seqName in list(seqInfo.keys()):
 			seq = seqInfo[seqName]
 			seqStart = seq[0]
 			seqEnd = seq[1]
@@ -410,8 +410,8 @@ class prefsClass(dict):
 
 		
 		# find any old sequences that no longer exist and get rid of them
-		curSequences = seqInfo.keys()
-		prefsSequences = self['Sequences'].keys()
+		curSequences = list(seqInfo.keys())
+		prefsSequences = list(self['Sequences'].keys())
 		for seqName in prefsSequences:
 			if not seqName in curSequences:
 				#print "Removing sequence %s..." % seqName
@@ -579,7 +579,7 @@ class prefsClass(dict):
 
 	# Cleans up unused and invalid visibility tracks
 	def cleanVisTracks(self):
-		for keyName in self['Sequences'].keys():
+		for keyName in list(self['Sequences'].keys()):
 			key = self['Sequences'][keyName]
 			VisFound = False
 			try: VisFound = key['Vis']['Enabled']
@@ -591,7 +591,7 @@ class prefsClass(dict):
 			# check each track in the prefs and see if it's enabled.
 			# if it's not enabled, get rid of the track key.  Also,
 			# check to make sure that objects still exist :-)
-			for trackName in visKey['Tracks'].keys():
+			for trackName in list(visKey['Tracks'].keys()):
 				track = visKey['Tracks'][trackName]
 				try: hasTrack = track['hasVisTrack']
 				except: hasTrack = False
@@ -763,7 +763,7 @@ class prefsClass(dict):
 		materials = self['Materials']
 
 		# remove unused materials from the prefs
-		for imageName in materials.keys()[:]:
+		for imageName in list(materials.keys())[:]:
 			if not (imageName in imageList): del materials[imageName]
 
 		if len(imageList)==0: return

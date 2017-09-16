@@ -154,14 +154,14 @@ class SeqControlsClassBase:
 	#  @param seqName The name of the currently selected sequence.
 	#  @param seqPrefs The preferences key of the currently selected sequence.
 	def refreshSequenceOptions(self, seqName, seqPrefs):
-		print "Parent refreshSequenceOptions called.  You probably forgot to implement it in your new child class :-)"
+		print("Parent refreshSequenceOptions called.  You probably forgot to implement it in your new child class :-)")
 		pass
 
 	## @brief Clears sequence specific option controls on the right side of the sequences panel.
 	#  @note This method should be called when no sequence list item is currently selected.
 	#  @note Must be overridden by child classes.
 	def clearSequenceOptions(self):
-		print "Parent clearSequenceOptions called.  You probably forgot to implement it in your new child class :-)"
+		print("Parent clearSequenceOptions called.  You probably forgot to implement it in your new child class :-)")
 		pass
 
 	## @brief Updates GUI states when the sequence list item selection is changed.
@@ -247,7 +247,7 @@ class SeqControlsClassBase:
 	#  @param newwidth The new width of the GUI control in pixels.
 	#  @param newheight The new height of the GUI control in pixels.
 	def guiSeqListResize(self, control, newwidth, newheight):
-		print "Parent guiSeqListResize called.  You probably forgot to implement it in your new child class :-)"
+		print("Parent guiSeqListResize called.  You probably forgot to implement it in your new child class :-)")
 		pass
 
 	## @brief Place holder resize callback
@@ -321,7 +321,7 @@ class SeqControlsClassBase:
 		self.clearSequenceList()
 		Prefs = DtsGlobals.Prefs
 		# loop through all actions in the preferences
-		keys = Prefs['Sequences'].keys()
+		keys = list(Prefs['Sequences'].keys())
 		keys.sort(lambda x, y: cmp(x.lower(),y.lower()))
 		for seqName in keys:
 			seqPrefs = Prefs['Sequences'][seqName]

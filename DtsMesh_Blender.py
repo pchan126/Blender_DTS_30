@@ -110,7 +110,7 @@ class BlenderMesh(DtsMesh):
 		
 		# Then, we can add in batches
 		limitExceeded = False
-		for group in materialGroups.values(): 
+		for group in list(materialGroups.values()): 
 			self.bVertList = []
 			self.dVertList = []
 			# Insert Polygons
@@ -313,8 +313,8 @@ class BlenderMesh(DtsMesh):
 		
 		boneList = []
 		hasWeights = False
-		for arm in Blender.Armature.Get().values():
-			for b in arm.bones.values():
+		for arm in list(Blender.Armature.Get().values()):
+			for b in list(arm.bones.values()):
 				boneList.append(b.name)
 
 		for i in range(len(mesh.verts)):

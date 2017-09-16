@@ -23,10 +23,10 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-from Torque_Util import *
+from .Torque_Util import *
 import math
 import copy
-from QADTriStripper import *
+from .QADTriStripper import *
 
 
 '''
@@ -49,7 +49,7 @@ class Stripper:
 		self.strips = []
 		self.faces = []
 
-from Stripper_VTK import *
+from .Stripper_VTK import *
 #from Stripper_NVIDIA import *
 
 def chooseStripper():

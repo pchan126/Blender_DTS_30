@@ -23,7 +23,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-from UserAnimBase import *
+from .UserAnimBase import *
 
 # ***************************************************************************************************
 ## @brief Class that creates and owns the GUI controls on the IFL sub-panel of the Sequences panel.
@@ -263,11 +263,11 @@ class IFLControlsClass(UserCreatedSeqControlsClassBase):
 		self.clearIFLMatPulldown()
 		# loop through all materials in the preferences and check for IFL materials
 		Prefs = DtsGlobals.Prefs
-		try: x = Prefs['Materials'].keys()
+		try: x = list(Prefs['Materials'].keys())
 		except: Prefs['Materials'] = {}
-		keys = Prefs['Materials'].keys()
+		keys = list(Prefs['Materials'].keys())
 		keys.sort(lambda x, y: cmp(x.lower(),y.lower()))
-		for matName in Prefs['Materials'].keys():
+		for matName in list(Prefs['Materials'].keys()):
 			mat = Prefs['Materials'][matName]
 			try: x = mat['IFLMaterial']
 			except KeyError: mat['IFLMaterial'] = False

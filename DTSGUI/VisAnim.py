@@ -23,7 +23,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-from UserAnimBase import *
+from .UserAnimBase import *
 import Blender
 
 
@@ -60,7 +60,7 @@ def getArmBoneNames(armature):
 	try: arm = Blender.Armature.Get(armature)
 	except: return []
 	retVal = []
-	for bone in arm.bones.keys():
+	for bone in list(arm.bones.keys()):
 		retVal.append(bone)
 	return retVal
 

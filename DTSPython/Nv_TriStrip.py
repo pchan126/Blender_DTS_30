@@ -1,4 +1,4 @@
-from Nv_TriStripObjects import *
+from .Nv_TriStripObjects import *
 import array
 from array import *
 
