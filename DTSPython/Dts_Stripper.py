@@ -23,38 +23,49 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
+import bpy
 from .Torque_Util import *
 import math
 import copy
 from .QADTriStripper import *
-
 
 '''
 	Generic Triangle Stripper Interface
 '''
 
 use_stripper = "QAD"
-#use_stripper = "VTK"
-#use_stripper = "NVIDIA"
+
+
+# use_stripper = "VTK"
+# use_stripper = "NVIDIA"
 
 class Stripper:
-	def __init__(self):
-		self.clear()
-	def __del__(self):
-		del self.faces
-		del self.strips
-	def strip(self):
-		self.strips = []
-	def clear(self):
-		self.strips = []
-		self.faces = []
+    def __init__(self):
+        self.clear()
+
+    def __del__(self):
+        del self.faces
+        del self.strips
+
+    def strip(self):
+        self.strips = []
+
+    def clear(self):
+        self.strips = []
+        self.faces = []
+
 
 from .Stripper_VTK import *
-#from Stripper_NVIDIA import *
+
+
+# from Stripper_NVIDIA import *
 
 def chooseStripper():
-	global use_stripper
-	if use_stripper == "VTK" and vtk != None: return VTKStripper()
-	elif use_stripper == "QAD": return QADTriStripper(Stripper.maxStripSize)
-	#elif use_stripper == "NVIDIA": return NVIDIAStripper()
-	else: return None
+    global use_stripper
+    if use_stripper == "VTK" and vtk != None:
+        return VTKStripper()
+    elif use_stripper == "QAD":
+        return QADTriStripper(Stripper.maxStripSize)
+    # elif use_stripper == "NVIDIA": return NVIDIAStripper()
+    else:
+        return None

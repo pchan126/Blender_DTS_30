@@ -27,5 +27,34 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	DTSPython Module Init Code
 '''
 
+#    Addon info
+bl_info = {
+    'name': 'DtsGUI',
+    'author': 'Paul Jan',
+    'location': 'File > Export > Export DTS',
+    'category': 'File'
+}
 
-from .DtsGUI import *
+# To support reload properly, try to access a package var,
+# if it's there, reload everything
+if "bpy" in locals():
+    import importlib
+
+    importlib.reload(About)
+    importlib.reload(DetailLevels)
+    importlib.reload(DtsGUI)
+    importlib.reload(General)
+    importlib.reload(IFLAnim)
+    importlib.reload(Materials)
+    importlib.reload(Nodes)
+    importlib.reload(SequenceBase)
+    importlib.reload(SequenceOptions)
+    importlib.reload(SequenceProperties)
+    importlib.reload(ShapeOptions)
+    importlib.reload(UserAnimBase)
+    importlib.reload(VisAnim)
+    print("Reloaded multifiles")
+else:
+    from .DtsGUI import *
+
+    print("Imported multifiles")

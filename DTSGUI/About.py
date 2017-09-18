@@ -22,6 +22,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
+import bpy
 
 import Common_Gui
 import DtsGlobals
@@ -33,41 +34,41 @@ import DtsGlobals
 *
 ***************************************************************************************************
 '''
+
+
 class AboutControlsClass:
-	def __init__(self, guiAboutSubtab):
-		global globalEvents
-		
-		# initialize GUI controls
-		self.guiAboutText = Common_Gui.MultilineText("guiAboutText", 
-		"Torque Exporter Plugin for Blender\n" +
-		"\n"
-		"Written by James Urquhart, with assistance from Tim Gift, Clark Fagot, Wes Beary,\n" +
-		"Ben Garney, Joshua Ritter, Emanuel Greisen, Todd Koeckeritz,\n" +
-		"Ryan J. Parker, Walter Yoon, and Joseph Greenawalt.\n" +
-		"GUI code written with assistance from Xen and Xavier Amado.\n" +
-		"Additional thanks goes to the testers.\n" +
-		"\n" +
-		"Visit GarageGames at http://www.garagegames.com", None, self.guiAboutTextResize)
-		
-		# add controls to containers
-		guiAboutSubtab.addControl(self.guiAboutText)
-		
+    def __init__(self, guiAboutSubtab):
+        global globalEvents
 
-	def cleanup(self):
+        # initialize GUI controls
+        self.guiAboutText = Common_Gui.MultilineText("guiAboutText",
+                                                     "Torque Exporter Plugin for Blender\n" +
+                                                     "\n"
+                                                     "Written by James Urquhart, with assistance from Tim Gift, Clark Fagot, Wes Beary,\n" +
+                                                     "Ben Garney, Joshua Ritter, Emanuel Greisen, Todd Koeckeritz,\n" +
+                                                     "Ryan J. Parker, Walter Yoon, and Joseph Greenawalt.\n" +
+                                                     "GUI code written with assistance from Xen and Xavier Amado.\n" +
+                                                     "Additional thanks goes to the testers.\n" +
+                                                     "\n" +
+                                                     "Visit GarageGames at http://www.garagegames.com", None,
+                                                     self.guiAboutTextResize)
 
-		# Must destroy any GUI objects that are referenced in a non-global scope
-		# explicitly before interpreter shutdown to avoid the dreaded
-		# "error totblock" message when exiting Blender.
-		# Note: __del__ is not guaranteed to be called for objects that still
-		# exist when the interpreter exits.
-		del self.guiAboutText
+        # add controls to containers
+        guiAboutSubtab.addControl(self.guiAboutText)
 
-	def refreshAll(self):
-		pass
-		
-	def guiAboutTextResize(self, control, newwidth, newheight):
-		control.x = 10
-		control.y = 120
+    def cleanup(self):
+        # Must destroy any GUI objects that are referenced in a non-global scope
+        # explicitly before interpreter shutdown to avoid the dreaded
+        # "error totblock" message when exiting Blender.
+        # Note: __del__ is not guaranteed to be called for objects that still
+        # exist when the interpreter exits.
+        del self.guiAboutText
 
-	
-	# other event callbacks and helper methods go here.
+    def refreshAll(self):
+        pass
+
+    def guiAboutTextResize(self, control, newwidth, newheight):
+        control.x = 10
+        control.y = 120
+
+    # other event callbacks and helper methods go here.

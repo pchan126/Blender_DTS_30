@@ -27,10 +27,43 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	DTSPython Module Init Code
 '''
 
-from .Torque_Util import *
-from .Dts_Stream import *
-from .Dts_Stripper import *
-from .Dts_Mesh import *
-from .Dts_TranslucentSort import *
-from .Dts_Shape import *
-from .pyBisect import *
+#    Addon info
+bl_info = {
+    'name': 'DtsPython',
+    'author': 'Paul Jan',
+    'location': 'File > Export > Export DTS',
+    'category': 'File'
+}
+
+# To support reload properly, try to access a package var,
+# if it's there, reload everything
+if "bpy" in locals():
+    import importlib
+
+    importlib.reload(Dts_mesh)
+    importlib.reload(Dts_Shape)
+    importlib.reload(Dts_Stream)
+    importlib.reload(Dts_Stripper)
+    importlib.reload(Dts_Test)
+    importlib.reload(Dts_TranslucentSort)
+    importlib.reload(Nv_TriStrip)
+    importlib.reload(Nv_TriStripObjects)
+    importlib.reload(Nv_VertexCache)
+    importlib.reload(pyBisect)
+    importlib.reload(QADTriStripper)
+    importlib.reload(Stripper_VTK)
+    importlib.reload(Torque_Math)
+    importlib.reload(Torque_Utils)
+    print("Reloaded multifiles")
+else:
+    from .Torque_Util import *
+    from .Dts_Stream import *
+    from .Dts_Stripper import *
+    from .Dts_Mesh import *
+    from .Dts_TranslucentSort import *
+    from .Dts_Shape import *
+    from .pyBisect import *
+    print("Imported multifiles")
+
+
+
