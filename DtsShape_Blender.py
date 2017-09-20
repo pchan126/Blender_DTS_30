@@ -22,17 +22,30 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
-import DTSPython
-from DTSPython import *
 
-import DtsMesh_Blender
-from DtsMesh_Blender import *
+bl_info = {
+    "name": "Torque Shape (.dts)...",
+    "author": "Paul Jan",
+    "version": (1, 0),
+    "blender": (2, 75, 0),
+    "location": "File > Export > Torque (.dts)",
+    "description": "Export to Torque (.dts) format.",
+    "warning": "",
+    "wiki_url": "",
+    "category": "Export",
+}
 
-import Blender
-from Blender import NMesh, Armature, Scene, Object, Material, Texture
-from Blender import Mathutils as bMath
+from . import DTSPython
+from .DTSPython import *
 
-import DtsPoseUtil
+from. import DtsMesh_Blender
+from .DtsMesh_Blender import *
+
+import bpy
+#from bpy import NMesh, Armature, Scene, Object, Material, Texture
+#from bpy import Mathutils as bMath
+
+from . import DtsPoseUtil
 
 import gc
 
@@ -106,7 +119,8 @@ class BlenderShape(DtsShape):
 		self.restTransforms = None
 		
 		# set rest frame before initializing transformUtil
-		Blender.Set('curframe', prefs['RestFrame'])
+#		Blender.Set('curframe', prefs['RestFrame'])
+		bpy.context.scene.frame_set(prefs['RestFrame'])
 
 		# this object is the interface through which we get blender tranform data
 		# for object and bone nodes

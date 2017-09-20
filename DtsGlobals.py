@@ -23,7 +23,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-
+from .DtsPrefs import prefsClass
 
 '''
   Blender Exporter For Torque
@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Version = "0.97 Beta3"
 #Version = "0.97"
-Prefs = None
+Prefs = None;
 SceneInfo = None
 Prefs_keyname = ""
 export_tree = None
@@ -43,13 +43,13 @@ pathSeparator = "/"
 textDocName = "TorqueExporter_SCONF2"
 
 # these types never contain exportable geometry
-neverGeometryTypes = ['Empty', 'Camera', 'Lamp', 'Lattice', 'Armature']
+neverGeometryTypes = ['EMPTY', 'CAMERA', 'LAMP', 'LATTICE', 'ARMATURE']
 # these types are always assumed to contain faces (exportable geometry)
-alwaysGeometryTypes = ['Mesh', 'Text', 'MBall']
+alwaysGeometryTypes = ['MESH', 'TEXT', 'MBALL']
 # we need to test these types to see if they actually have faces and not just verts
-testGeometryTypes = ['Surf', 'Curve']
+testGeometryTypes = ['SURF', 'CURVE']
 # we need to get the display data for the following types
-needDisplayDataTypes = ['Surf', 'Curve', 'Text', 'MBall']
+needDisplayDataTypes = ['SURF', 'CURVE', 'TEXT', 'MBALL']
 
 # need to keep track of the last loaded file so we can
 # force reloading of prefs from the text buffer instead of

@@ -61,7 +61,7 @@ class StringTable:
         if caseSensitive:
             strn_compare = strn
         else:
-            strn_compare = string.lower(strn)
+            strn_compare = strn.lower()
 
         # Firstly, check if the string already exists
         for i in range(0, len(self.strings)):
@@ -73,9 +73,14 @@ class StringTable:
                     return i
 
         # If we got here, we have a new string to add
-        arr = array('c')
+        arr = array('b')
+        tempstring = '';
         for c in range(0, len(strn)):
-            arr.append(strn[c])
+            tempstring += strn[c];
+            # x = array('b')
+            # x.frombytes(strn[c].encode())
+            # arr.append(x)
+        arr.frombytes(tempstring.encode())
         self.strings.append(arr)
         return len(self.strings) - 1
 
@@ -438,7 +443,7 @@ def getBlenderIPOChannelConst(IPOType, IPOChannel):
 
 # Helper functions for dealing with sequences
 
-import Blender
+import bpy
 
 '''
 def validateAction(seqName, seqPrefs):

@@ -23,14 +23,13 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-import Blender
-from Blender import  Draw, BGL, Window, Image
-from Blender.Window import Theme
+import bpy
+
 import string
 import math
 import types
-
-from DtsGlobals import *
+import time
+from .DtsGlobals import *
 
 ###################################
 #   Blender Exporter For Torque
@@ -53,8 +52,8 @@ dragError = 10
 # Shift key
 shiftState = False
 
-
-LastOverlapControlClickTime = Blender.sys.time()
+if __name__ == '__main__':
+	LastOverlapControlClickTime = time.clock()
 
 #----------------------------------------------------------------------------
 '''
