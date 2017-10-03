@@ -41,7 +41,7 @@ Blender object or Blender bone.
 '''
 
 
-class nodeInfoClass:
+class nodeInfoClass():
     def __init__(self, nodeName, blenderType, blenderObj, parentNI, armParentNI=None):
         self.dtsNodeName = nodeName  # <- name of the (exported) dts node
         self.dtsObjName = None  # <- name of the dts object (for meshes)
@@ -140,7 +140,7 @@ class nodeInfoClass:
             except:
                 hasMeshData = False
 
-            if hasMeshData and len(mesh_data.faces) > 0:
+            if hasMeshData and len(mesh_data.polygons) > 0:
                 retVal = True
             else:
                 retVal = False
@@ -295,7 +295,7 @@ class SceneInfoClass:
         if (bObjType == 'Armature'):
             tempBones = {}
             # add armature bones if needed
-            armDb = obj.getData()
+            armDb = obj.data
             for bone in [x for x in list(armDb.bones.values()) if x.parent == None]:
                 self.__addBoneTree(obj, n, bone, armDb, n, tempBones)
 
@@ -521,7 +521,6 @@ class SceneInfoClass:
 
     pathPortion = staticmethod(pathPortion)
 
-
     # Gets the Base Name from the File Path
     @persistent
     def getDefaultBaseName():
@@ -625,51 +624,66 @@ class SceneInfoClass:
         for ni in self.meshExportList:
             obj = ni.getBlenderObj()
             if obj.type() != "MESH": continue
-            objData = obj.getData()
-            for face in objData.faces:
-                matName = SceneInfoClass.getFaceDtsMatName(face, objData)
+            objData = obj.data
+            for slot in obj.material_slots:
+                matname == None
+                mat = slot.material
+                if mat.active_texture.type == "IMAGE":
+                    matName = SceneInfoClass.stripImageExtension(mat.active_texture.image.filepath)
                 if matName != None: imageList.append(matName)
+
+            # for face in objData.polygon:
+            #     matName = SceneInfoClass.getFaceDtsMatName(face, obj)
+            #     if matName != None: imageList.append(matName)
 
         retVal = list(set(imageList))
         return retVal
 
     # gets a dts material name for a given Blender mesh primitive
-    def getFaceDtsMatName(face, msh):
-        imageName = None
-        try:
-            image = face.image
-        except ValueError:
-            image = None
-        if image == None:
-            # there isn't an image assigned to the face...
-            # do we have a material index?
-            if face.mat != None:
-                try:
-                    mat = msh.materials[face.mat]
-                except:
-                    return None
-                if mat == None: return None
-                # we have a material index, so get the name of the material
-                imageName = SceneInfoClass.stripImageExtension(mat.name)
-                # imageName = mat.name
-                return imageName
+    # materials are stored in the object, mesh only has an index
+    def getFaceDtsMatName(face, obj):
+        # msh = obj.data
+        # imageName = None
+        # # try:
+        # #     slot = obj.material_slots[face.material_index]
+        # #     mat = slot.material
+        # #     image = face.image
+        # # except ValueError:
+        # #     image = None
+        # # if image == None:
+        # slot = obj.material_slots[face.material_index]
+        # mat = slot.material
+        # # there isn't an image assigned to the face...
+        # # do we have a material index?
+        # if face.mat != None:
+        #     try:
+        #         mat = msh.materials[face.mat]
+        #     except:
+        #         return None
+        #     if mat == None: return None
+        #     # we have a material index, so get the name of the material
+        #     imageName = SceneInfoClass.stripImageExtension(mat.name)
+        #     # imageName = mat.name
+        #     return imageName
+        #
+        #     # else:
+        #     #     # we have an image
+        #     #     imageName = SceneInfoClass.stripImageExtension(face.image.getName(), face.image.getFilename())
+        #     #     # imageName = face.image.getName()
+        #     #     return imageName
+        return None
 
-        else:
-            # we have an image
-            imageName = SceneInfoClass.stripImageExtension(face.image.getName(), face.image.getFilename())
-            # imageName = face.image.getName()
-            return imageName
 
-    getFaceDtsMatName = staticmethod(getFaceDtsMatName)
-
-    # gets the names of all Blender images with extensions stripped
+    getFaceDtsMatName = staticmethod(getFaceDtsMatName)  # gets the names of all Blender images with extensions stripped
     def getAllBlenderImages():
         imageNames = []
         for image in bpy.data.images:
             imageNames.append(SceneInfoClass.stripImageExtension(image.getName(), image.filepath()))
         return imageNames
 
+
     getAllBlenderImages = staticmethod(getAllBlenderImages)
+
 
     #################################################
     #  Nodes
@@ -684,6 +698,7 @@ class SceneInfoClass:
         temp.sort()
         return temp
 
+
     # get the names of all object generated nodes
     def getObjectNodeNames(self):
         temp = []
@@ -692,6 +707,7 @@ class SceneInfoClass:
             temp.append(ni.dtsNodeName)
         temp.sort()
         return temp
+
 
     # get the names of all bone generated nodes
     def getBoneNodeNames(self):
@@ -702,6 +718,7 @@ class SceneInfoClass:
         temp.sort()
         return temp
 
+
     #################################################
     #  Sequences
     #################################################
@@ -709,7 +726,7 @@ class SceneInfoClass:
 
     # gets the length of an action
     def __getActionLength(actName):
-        act = Blender.Armature.NLA.GetActions()[actName]
+        act = bpy.data.actions[actName]
         min = 65535
         max = 1
         for frNum in act.getFrameNumbers():
@@ -718,7 +735,9 @@ class SceneInfoClass:
         retVal = int(max - min)
         return max
 
+
     __getActionLength = staticmethod(__getActionLength)
+
 
     # gets the name portion of a sequence marker string
     def __getSeqMarkerName(string):
@@ -728,7 +747,9 @@ class SceneInfoClass:
         else:
             return None
 
+
     __getSeqMarkerName = staticmethod(__getSeqMarkerName)
+
 
     # gets the start/end flag from a sequence marker string.
     # returns a (lowercase) string, either "start" or "end"
@@ -739,11 +760,13 @@ class SceneInfoClass:
         else:
             return None
 
+
     __getSeqMarkerType = staticmethod(__getSeqMarkerType)
+
 
     # find a named marker on the timeline
     def findMarker(markerName):
-        markedList = Blender.Scene.GetCurrent().getTimeLine().getMarked()
+        markedList = context.scene.timeline_markers
         for frameNum in markedList:
             markerNames = markedList[frameNum]
             for mn in markerNames:
@@ -751,11 +774,13 @@ class SceneInfoClass:
                     return frameNum
         return None
 
+
     findMarker = staticmethod(findMarker)
+
 
     # returns true if the given frame number has multiple markers
     def hasMultipleMarkers(frameNum):
-        markedList = Blender.Scene.GetCurrent().getTimeLine().getMarked()
+        markedList = context.scene.timeline_markers
         retVal = False
         try:
             markerNames = markedList[frameNum]
@@ -765,26 +790,30 @@ class SceneInfoClass:
             retVal = True
         return retVal
 
+
     hasMultipleMarkers = staticmethod(hasMultipleMarkers)
+
 
     # returns True if a frame on the timeline has no markers.
     def isNotMarked(frameNum):
         retVal = True
-        markedList = Blender.Scene.GetCurrent().getTimeLine().getMarked()
+        markedList = context.scene.timeline_markers
         try:
             x = markedList[frameNum]
         except:
             retVal = False
         return retVal
 
+
     isNotMarked = staticmethod(isNotMarked)
+
 
     # called by prefs refreshSequencePrefs
     # returns a dictionary containing sequence names, start and end frames
     # in the form {'mySequence':[0,10], ...}
     def getSequenceInfo():
         foundSequences = []
-        markedList = Blender.Scene.GetCurrent().getTimeLine().getMarked()
+        markedList = context.scene.timeline_markers
 
         sequences = {}
 
@@ -859,7 +888,9 @@ class SceneInfoClass:
 
         return sequences
 
+
     getSequenceInfo = staticmethod(getSequenceInfo)
+
 
     # deletes a named marker
     # fails silently if the marker name does not exist.
@@ -875,10 +906,12 @@ class SceneInfoClass:
             del x
             return False
         else:
-            Blender.Scene.GetCurrent().getTimeLine().delete(frameNum)
+            bpy.context.scene.getTimeLine().delete(frameNum)
         return True
 
+
     delMarker = staticmethod(delMarker)
+
 
     # Deletes all sequence markers that match the given name
     def delSeqMarkers(seqName):
@@ -909,7 +942,9 @@ class SceneInfoClass:
             x = Blender.Draw.PupMenu(message)
             del x
 
+
     delSeqMarkers = staticmethod(delSeqMarkers)
+
 
     # Renames sequence markers that match the given name
     def renameSeqMarkers(oldName, newName):
@@ -936,25 +971,27 @@ class SceneInfoClass:
 
         if not (smm or emm):
             # rename the markers.
-            Blender.Scene.GetCurrent().getTimeLine().setName(startFrame, newStartName)
-            Blender.Scene.GetCurrent().getTimeLine().setName(endFrame, newEndName)
+            bpy.context.scene.getTimeLine().setName(startFrame, newStartName)
+            bpy.context.scene.getTimeLine().setName(endFrame, newEndName)
         else:
             message = "Could not rename sequence  \'" + oldName + "\'!%t|Cancel"
             x = Blender.Draw.PupMenu(message)
             del x
 
+
     renameSeqMarkers = staticmethod(renameSeqMarkers)
+
 
     # create a marker on the timeline
     # returns true if marker was successfully created, otherwise returns false
     def createMarker(markerName, frameNum):
         # check to make sure the frame isn't out of range, if it is,
         # increase the range :-)
-        context = Blender.Scene.GetCurrent().getRenderingContext()
+        context = bpy.context.scene.getRenderingContext()
         eFrame = context.endFrame()
         if frameNum > eFrame:
             context.endFrame(frameNum)
-            Blender.Scene.GetCurrent().update(1)
+            bpy.context.scene.update(1)
 
         isNotMarked = SceneInfoClass.isNotMarked(frameNum)
         if SceneInfoClass.findMarker(markerName) == frameNum:
@@ -968,12 +1005,14 @@ class SceneInfoClass:
             del x
             return False
         else:
-            timeline = Blender.Scene.GetCurrent().getTimeLine()
+            timeline = bpy.context.scene.getTimeLine()
             timeline.add(frameNum)
             timeline.setName(frameNum, markerName)
             return True
 
+
     createMarker = staticmethod(createMarker)
+
 
     # returns true if the sequence was successfully created, otherwise returns false.
     def createSequenceMarkers(seqName, startFrame, endFrame):
@@ -1016,7 +1055,9 @@ class SceneInfoClass:
         else:
             return True
 
+
     createSequenceMarkers = staticmethod(createSequenceMarkers)
+
 
     # gets the action strips for all objects in the scene
     # and returns a list of tuples in the form [(stripName, startFrame, endFrame), ...]
@@ -1052,6 +1093,7 @@ class SceneInfoClass:
 
         return retVal
 
+
     # create sequence markers from action strips
     def markersFromActionStrips(self):
         stripTuples = self.getAllActionStrips()
@@ -1059,6 +1101,7 @@ class SceneInfoClass:
             stripName, startFrame, endFrame = t
             # create the markers
             SceneInfoClass.createSequenceMarkers(stripName, startFrame, endFrame)
+
 
     # create action strips from actions
     def actionStripsFromActions(self):
@@ -1093,11 +1136,13 @@ class SceneInfoClass:
         # refresh everything.
         bpy.context.scene.update(1)
 
+
     # create sequence markers from actions, first converting actions to action strips
     def createFromActions(self):
         # todo - bail if action strips already exist
         self.actionStripsFromActions()
         self.markersFromActionStrips()
+
 
     #################################################
     #  Meshes and DTS objects
@@ -1114,7 +1159,9 @@ class SceneInfoClass:
             detail_name = meshName.split(".")[0]
         return detail_name
 
+
     getStrippedMeshName = staticmethod(getStrippedMeshName)
+
 
     # gets dts object names (unique mesh names across all detail levels, minus trailing extension)
     def getDtsObjectNames(self):
@@ -1129,6 +1176,7 @@ class SceneInfoClass:
                 uniqueNames[dtsObjName] = 0
         return uniqueNames
         '''
+
 
     # gets a list of dts object names sorted by hierarchy order
     def getSortedDtsObjectNames(self):
@@ -1154,6 +1202,7 @@ class SceneInfoClass:
 
         return sortedNameList
 
+
     def __walkDtsObjTree(self, rootObj, sortedList, unsortedDTSObjs, extras):
         # get all objects that are children of the current root object
         thisLevel = [x for x in list(self.nodes.values()) if x.getExportLayerNodeParentNI() == rootObj]
@@ -1163,8 +1212,7 @@ class SceneInfoClass:
         # early out if there are no children
         # if len(thisLevel) == 0: return sortedList
         # sort children on the same level alphabetially
-        thisLevel.sort(lambda x, y: cmp(x.dtsObjName if x.dtsObjName != None else x.dtsNodeName,
-                                        y.dtsObjName if y.dtsObjName != None else y.dtsNodeName))
+        thisLevel.sort(key=(lambda x: x.dtsObjName if x.dtsObjName != None else x.dtsNodeName))
         # recursive call adds grandchildren of each child on this level, on down the line
         for objNI in thisLevel:
             if objNI in unsortedDTSObjs:
@@ -1172,6 +1220,7 @@ class SceneInfoClass:
             sortedList = self.__walkDtsObjTree(objNI, sortedList, unsortedDTSObjs, extras)
         # return the final list.
         return sortedList
+
 
     # test whether or not a mesh object is skinned
     def isSkinnedMesh(o):
@@ -1185,7 +1234,9 @@ class SceneInfoClass:
 
         return hasArmatureDeform
 
+
     isSkinnedMesh = staticmethod(isSkinnedMesh)
+
 
     def getSkinArmTargets(self, o):
         targets = []
@@ -1203,6 +1254,7 @@ class SceneInfoClass:
                     targets.append(self.armatures[targetObj.name])
         return targets
 
+
     def getVGroupTransDict(self):
         retVal = {}
         # find all exportable bone nodes
@@ -1210,6 +1262,7 @@ class SceneInfoClass:
             if ni.blenderType != "BONE" or ni.isBanned(): continue
             retVal[ni.originalBoneName] = ni.dtsNodeName
         return retVal
+
 
     #################################################
     #  Misc
@@ -1220,12 +1273,14 @@ class SceneInfoClass:
     def getChildren(self, obj):
         return [x for x in bpy.context.objects if x.parent == obj]
 
+
     # Gets all the children of an object (recursive)
     def getAllChildren(self, obj):
         obj_children = getChildren(obj)
         for child in obj_children[:]:
             obj_children += getAllChildren(child)
         return obj_children
+
 
     #################################################
     #  These methods are used to detect and warn
@@ -1264,6 +1319,7 @@ class SceneInfoClass:
 
         return foundList
 
+
     # Gets a list of armatures ni structs that are exportable
     # and are targets of an armature modifier without an armature parent
     # for the mesh with the modifier.
@@ -1278,6 +1334,7 @@ class SceneInfoClass:
                     concernList.append(mod[Modifier.Settings.OBJECT].name)
         retval = [self.armatures[armName] for armName in concernList]
         return retval
+
 
     # get meshes that need the warning
     def getWarnMeshes(self, badArmNIList):

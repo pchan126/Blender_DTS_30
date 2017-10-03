@@ -49,10 +49,10 @@ def getIPOChannelTypes(IPOType):
 ## @brief Returns a list of all objects or materials in the scene.
 #  @param IPOType What we want.  Valid values are "Object" or "Material"
 def getAllSceneObjectNames(IPOType):
-    scene = Blender.Scene.GetCurrent()
+    scene = bpy.context.scene
     retVal = []
     if IPOType == "Object":
-        allObjs = Blender.Scene.GetCurrent().objects
+        allObjs = bpy.context.scene.objects
         for obj in allObjs:
             retVal.append(obj.name)
     elif IPOType == "Material":
@@ -67,7 +67,7 @@ def getAllSceneObjectNames(IPOType):
 #  @param armature The name of the armature.
 def getArmBoneNames(armature):
     try:
-        arm = Blender.Armature.Get(armature)
+        arm = bpy.data.objects[armature].data
     except:
         return []
     retVal = []

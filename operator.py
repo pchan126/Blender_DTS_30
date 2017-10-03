@@ -116,8 +116,8 @@ def doExport(context, filePath, config):
 
         # check the armatures to see if any are locked in rest position
         # for armOb in scene .objects:
-        #     if (armOb.getType() != 'Armature'): continue
-        #     if armOb.getData().restPosition:
+        #     if (armOb.type != 'ARMATURE'): continue
+        #     if armOb.data.restPosition:
         #         # this popup was too long and annoying, let the standard warning/error popup handle it.
         #         # Blender.Draw.PupMenu("Warning%t|One or more of your armatures is locked into rest position. This will cause problems with exported animations.")
         #         Torque_Util.dump_writeWarning(
@@ -291,25 +291,25 @@ def doExport(context, filePath, config):
 #     '''
 #
 #
-#     # -------------------------------------------------------------------------------------------------
-#     def handleScene(issueWarnings=False):
-#         Prefs = DtsGlobals.Prefs
-#         # DtsGlobals.SceneInfo = SceneInfoClass(Prefs)
-#         SceneInfo = DtsGlobals.SceneInfo
-#         # if SceneInfo != None: SceneInfo.clear()
-#
-#
-#         # Torque_Util.dump_writeln("Processing Scene...")
-#         # What we do here is clear any existing export tree, then create a brand new one.
-#         # This is useful if things have changed.
-#         scn = Blender.Scene.GetCurrent()
-#         scn.update(1)
-#         # updateOldPrefs()
-#         # Torque_Util.dump_writeln("Cleaning Preference Keys")
-#         # cleanKeys()
-#         # createActionKeys()
-#
-#         SceneInfo.refreshAll(issueWarnings)
+    # -------------------------------------------------------------------------------------------------
+    def handleScene(issueWarnings=False):
+        Prefs = DtsGlobals.Prefs
+        # DtsGlobals.SceneInfo = SceneInfoClass(Prefs)
+        SceneInfo = DtsGlobals.SceneInfo
+        # if SceneInfo != None: SceneInfo.clear()
+
+
+        # Torque_Util.dump_writeln("Processing Scene...")
+        # What we do here is clear any existing export tree, then create a brand new one.
+        # This is useful if things have changed.
+        scn = bpy.context.scene
+        scn.update(1)
+        # updateOldPrefs()
+        # Torque_Util.dump_writeln("Cleaning Preference Keys")
+        # cleanKeys()
+        # createActionKeys()
+
+        SceneInfo.refreshAll(issueWarnings)
 #
 #
 #     # Prefs.refreshSequencePrefs()
@@ -752,4 +752,9 @@ class DTSExporter(bpy.types.Operator):
             self.filepath = bpy.path.ensure_ext(bpy.data.filepath, ".dts")
         WindowManager = context.window_manager
         WindowManager.fileselect_add(self)
+        # refresh all data.
+        handleScene(True)
+        Prefs.refreshSequencePrefs()
+        Prefs.refreshMaterialPrefs()
+        Prefs.savePrefs()
         return {'RUNNING_MODAL'}

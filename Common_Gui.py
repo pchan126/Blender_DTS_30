@@ -254,7 +254,7 @@ class TabButton(BasicButton):
 		if value == Draw.LEFTMOUSE:
 			# Check to see if a combo box event fired within the last
 			# 1/2 second.  If it did, we ignore the click (stray mouseup event).
-			curTime = Blender.sys.time()
+			curTime = time.time()
 			timeElapsed = curTime - LastOverlapControlClickTime
 			if timeElapsed < 0.5:
 				return False
@@ -411,7 +411,7 @@ class ComboBox(BasicControl):
 		# combo box event time in the event processing for lists
 		# to see if the events happened too close together, and
 		# discard the unwanted click if they did.
-		LastOverlapControlClickTime = Blender.sys.time()
+		LastOverlapControlClickTime = time.time()
 
 		if self.callback: self.callback(self)
 		return True
@@ -454,7 +454,7 @@ class NumberPicker(BasicControl):
 		# combo box event time in the event processing for lists
 		# to see if the events happened too close together, and
 		# discard the unwanted click if they did.
-		LastOverlapControlClickTime = Blender.sys.time()
+		LastOverlapControlClickTime = time.time()
 		if self.callback: self.callback(self)
 		return True
 		
@@ -902,7 +902,7 @@ class ListContainer(BasicContainer):
 					
 					# Check to see if a combo box event fired within the last
 					# 1/2 second.  If it did, we ignore the click (stray mouseup event).
-					curTime = Blender.sys.time()
+					curTime = time.time()
 					timeElapsed = curTime - LastOverlapControlClickTime
 					if timeElapsed < 0.5:
 						return False
@@ -1365,11 +1365,11 @@ class Progress:
 	def __init__(self):
 		self.stack = []		# [name, increment, max]
 		self.cProgress = 0.0
-		Blender.Window.WaitCursor(True)
+		# Blender.Window.WaitCursor(True)
 
 	def __del__(self):
 		del self.stack
-		Blender.Window.WaitCursor(False)
+		# Blender.Window.WaitCursor(False)
 
 	def pushTask(self, name, maxItems, maxProgress):
 		self.stack.append([name, (maxProgress - self.cProgress) / maxItems, maxProgress])
@@ -1513,7 +1513,7 @@ def drawGuiControls(baseLayer=False):
 	global Controls, curAreaSize, dragOffset
 	if len(Controls) == 0: return
 	
-	windowSize = Blender.Window.GetAreaSize()
+	# windowSize = Blender.Window.GetAreaSize()
 	#print windowSize[0], windowSize[1]
 	
 	if (curAreaSize[0] != windowSize[0]) or (curAreaSize[1] != windowSize[1]):

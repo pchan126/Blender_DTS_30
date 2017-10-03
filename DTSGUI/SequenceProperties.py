@@ -487,7 +487,7 @@ class SeqCommonControlsClass(SeqControlsClassBase):
             self.guiSeqDuration.enabled = False
             # todo - shouldn't talk to blender directly, ask SceneInfo instead...
             try:
-                self.guiSeqFPS.value = float(Blender.Scene.GetCurrent().getRenderingContext().framesPerSec())
+                self.guiSeqFPS.value = float(bpy.context.scene.getRenderingContext().framesPerSec())
             except:
                 self.guiSeqFPS.value = 25.0
             self.guiSeqDuration.tooltip = "Playback Time: %f Seconds, Sequence has no key frames!" % float(

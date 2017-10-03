@@ -32,7 +32,7 @@ to Per Face UV coordinates.
 
 
 def convertObject(object):
-	msh = object.getData()
+	msh = object.data
 	
 	if not msh.hasVertexUV(): return
 	if not msh.hasFaceUV():
@@ -40,7 +40,7 @@ def convertObject(object):
 		msh.update()
 
 	# Loop through faces
-	for f in msh.faces:
+	for f in msh.polygons:
 		for v in range(0, len(f.v)):
 			# Get face vert
 			vert = f.v[v]
@@ -59,5 +59,5 @@ def convertObject(object):
 	msh.update()
 
 if __name__ == "__main__":
-	for o in Blender.Scene.GetCurrent().objects:
-		if o.getType() == "Mesh": convertObject(o)
+	for o in bpy.context.scene.objects:
+		if o.type == "MESH": convertObject(o)

@@ -216,7 +216,7 @@ class IFLControlsClass(UserCreatedSeqControlsClassBase):
             self.refreshAll()
         else:
             message = "No sequence was selected.%t|Cancel"
-            x = Blender.Draw.PupMenu(message)
+            # x = Blender.Draw.PupMenu(message)
             del x
 
     #######################################

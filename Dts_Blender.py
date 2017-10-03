@@ -417,14 +417,14 @@ class hi:
 #             progressBar.update()
 #
 #             # Add all actions (will ignore ones not belonging to shape)
-#             scene = Blender.Scene.GetCurrent()
+#             scene = bpy.context.scene
 #             context = scene.getRenderingContext()
 #             actions = Armature.NLA.GetActions()
 #
 #             # check the armatures to see if any are locked in rest position
-#             for armOb in Blender.Scene.GetCurrent().objects:
-#                 if (armOb.getType() != 'Armature'): continue
-#                 if armOb.getData().restPosition:
+#             for armOb in bpy.context.scene.objects:
+#                 if (armOb.type != 'ARMATURE'): continue
+#                 if armOb.data.restPosition:
 #                     # this popup was too long and annoying, let the standard warning/error popup handle it.
 #                     # Blender.Draw.PupMenu("Warning%t|One or more of your armatures is locked into rest position. This will cause problems with exported animations.")
 #                     Torque_Util.dump_writeWarning(
@@ -607,7 +607,7 @@ class hi:
 #         # Torque_Util.dump_writeln("Processing Scene...")
 #         # What we do here is clear any existing export tree, then create a brand new one.
 #         # This is useful if things have changed.
-#         scn = Blender.Scene.GetCurrent()
+#         scn = bpy.context.scene
 #         scn.update(1)
 #         # updateOldPrefs()
 #         # Torque_Util.dump_writeln("Cleaning Preference Keys")

@@ -60,7 +60,7 @@ if accelerator == "BLENDER":
     # Vector class (3 members)
     class Vector:
         def __init__(self, x=0, y=0, z=0):
-            self.object = Blender.Mathutils.Vector([x, y, z])
+            self.object = bpy.mathutils.Vector([x, y, z])
 
         def __del__(self):
             del self.object
@@ -160,7 +160,7 @@ if accelerator == "BLENDER":
     # Vector Class (4 members)
     class Vector4(Vector):
         def __init__(self, x=0, y=0, z=0, w=0):
-            self.object = Blender.Mathutils.Vector([x, y, z, w])
+            self.object = bpy.mathutils.Vector([x, y, z, w])
 
         def __del__(self):
             del self.object
@@ -251,7 +251,7 @@ if accelerator == "BLENDER":
     # Vector Class (2 members)
     class Vector2(Vector):
         def __init__(self, x=0, y=0):
-            self.object = Blender.Mathutils.Vector([x, y])
+            self.object = bpy.mathutils.Vector([x, y])
 
         def __del__(self):
             del self.object
@@ -318,14 +318,14 @@ if accelerator == "BLENDER":
     # Quaternion Class (4 members)
     class Quaternion(Vector4):
         def __init__(self, x=0, y=0, z=0, w=0):
-            self.object = Blender.Mathutils.Quaternion([x, y, z, w])
+            self.object = bpy.mathutils.Quaternion([x, y, z, w])
 
         def __del__(self):
             del self.object
 
         def __mul__(self, other):  # against another quat
             res = Quaternion()
-            res.object = Blender.Mathutils.CrossQuats(self.object, other.object)
+            res.object = bpy.mathutils.CrossQuats(self.object, other.object)
             return res
 
         def conjugate(self):
@@ -407,13 +407,13 @@ if accelerator == "BLENDER":
 
         def __init__(self, dat=None):
             if dat == None:
-                self.object = Blender.Mathutils.Matrix(
+                self.object = bpy.mathutils.Matrix(
                     [0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0])
             else:
-                self.object = Blender.Mathutils.Matrix(
+                self.object = bpy.mathutils.Matrix(
                     [dat[0], dat[1], dat[2], dat[3]],
                     [dat[4], dat[5], dat[6], dat[7]],
                     [dat[8], dat[9], dat[10], dat[11]],
@@ -518,12 +518,12 @@ if accelerator == "BLENDER":
 
         def rotate(self, axis, angle):
             result = MatrixF()
-            result.object = Blender.Mathutils.RotationMatrix(float(angle), 4, "r", axis.object)
+            result.object = bpy.mathutils.RotationMatrix(float(angle), 4, "r", axis.object)
             return result
 
         def translate_matrix(self, vec):
             result = self.copy()
-            result.object = Blender.Mathutils.CopyMat(self.object)
+            result.object = bpy.mathutils.CopyMat(self.object)
             result[3][0] += vec[0]
             result[3][0] += vec[1]
             result[3][0] += vec[2]
@@ -531,7 +531,7 @@ if accelerator == "BLENDER":
 
         def scale_matrix(self, vec):
             result = self.copy()
-            result.object = Blender.Mathutils.CopyMat(self.object)
+            result.object = bpy.mathutils.CopyMat(self.object)
             result[0][0] *= vec[0]
             result[0][1] *= vec[1]
             result[0][2] *= vec[2]
@@ -548,7 +548,7 @@ if accelerator == "BLENDER":
 
         def copy(self):
             result = MatrixF()
-            result.object = Blender.Mathutils.CopyMat(self.object)
+            result.object = bpy.mathutils.CopyMat(self.object)
             return result
 
         def invert(self):

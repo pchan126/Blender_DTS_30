@@ -137,8 +137,8 @@ class GeneralControlsClass:
                 Torque_Util.dump_setout("%s%s%s.log" % (Prefs['exportBasepath'], pathSep, Prefs['exportBasename']))
         elif control.name == "guiCustomFilenameSelect":
             pathSep = DtsGlobals.SceneInfo.getPathSeparator()
-            Blender.Window.FileSelector(self.guiGeneralSelectorCallback, 'Select destination and filename',
-                                        Prefs['exportBasepath'] + pathSep + Prefs['exportBasename'])
+            # Blender.Window.FileSelector(self.guiGeneralSelectorCallback, 'Select destination and filename',
+            #                             Prefs['exportBasepath'] + pathSep + Prefs['exportBasename'])
         elif control.name == "guiCustomFilenameDefaults":
             Prefs['exportBasename'] = SceneInfoClass.getDefaultBaseName()
             Prefs['exportBasepath'] = SceneInfoClass.getDefaultBasePath()

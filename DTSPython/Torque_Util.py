@@ -69,7 +69,7 @@ class StringTable:
                 if self.strings[i].tostring() == strn_compare:
                     return i
             else:
-                if string.lower(self.strings[i].tostring()) == strn_compare:
+                if (self.strings[i].tostring().lower()) == strn_compare:
                     return i
 
         # If we got here, we have a new string to add
@@ -492,9 +492,9 @@ def validateVisibility(seqName, seqPrefs):
                 try:
                     bObj = None
                     if track['IPOType'] == "Object":
-                        bObj = Blender.Object.Get(track['IPOObject'])
+                        bObj = bpy.data.objects[track['IPOObject']]
                     elif track['IPOType'] == "Material":
-                        bObj = Blender.Material.Get(track['IPOObject'])
+                        bObj = bpy.data.objects[track['IPOObject']]
                     bIpo = bObj.getIpo()
                     IPOCurveName = getBlenderIPOChannelConst(track['IPOType'], track['IPOChannel'])
                     IPOCurve = None

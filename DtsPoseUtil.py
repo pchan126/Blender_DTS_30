@@ -24,7 +24,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
 import bpy
-from bpy import Mathutils as bMath
 
 from . import DTSPython
 from .DTSPython import *
@@ -36,119 +35,154 @@ from .DtsSceneInfo import *
 # import new
 import gc
 import math as pMath
-
+import mathutils
 gc.enable()
 
 
 # -------------------------------------------------------------------------------------------------
-class NodeTransformAddIn:
-    def initRestScaleData(self, initPoses=None):
-        self.restScale = self.__getNodeRestScale(initPoses)
+#class NodeTransformAddIn():
 
-    def __getNodeRestScale(self, poses):
-        if self.blenderType == "object":
-            retVal = self.__getObjectScale()
-        elif self.blenderType == "bone":
-            retVal = self.__getBoneScale(poses)
-        return retVal
 
-    # ***********************
-    # determine the position of any bone in worldspace
-    # TESTED
-    def __getBoneLocWS(self, poses):
-        pose = poses[self.armParentNI.blenderObjName]
-        # get the armature's rotation
-        armRot = self.armParentNI.getNodeRotWS(poses)
-        # get the pose location
-        bTrans = armRot.apply(toTorqueVec(pose.bones[self.originalBoneName].poseMatrix.translationPart()))
-        # Scale by armature's scale
-        bTrans = self.__fixBoneOffset(bTrans, self.armParentNI, poses)
-        # add on armature pivot to translate into worldspace
-        bTrans = bTrans + self.armParentNI.getNodeLocWS(poses)
-        return bTrans
+def initRestScaleData(self, initPoses=None):
+    self.restScale = self.__getNodeRestScale(initPoses)
 
-    def __fixBoneOffset(self, bOffset, armNI, poses):
-        offsetAccum = bOffset
-        # add the armature's own scale
-        armScale = armNI.getNodeScale(poses, False)
-        offsetAccum = Vector(offsetAccum.members[0] * armScale.members[0], offsetAccum.members[1] * armScale.members[1],
-                             offsetAccum.members[2] * armScale.members[2])
-        for parentNI in armNI.parentStack:
-            scale = parentNI.getNodeScale(poses, False)
-            # this early out is a big win!
-            if scale.eqDelta(Vector(1.0, 1.0, 1.0), 0.02): continue
-            # get parent rotation and inverse rotation
-            rot = parentNI.getNodeRotWS(poses)
-            rotInv = rot.inverse()
-            # rotate the offset into parent bone's space
-            offsetAccum = rotInv.apply(offsetAccum)
-            # apply the parent node's scale to the offset.
-            offsetAccum = Vector(offsetAccum[0] * scale[0], offsetAccum[1] * scale[1], offsetAccum[2] * scale[2])
-            # rotate back into worldspace for next iteration :-)
-            offsetAccum = rot.apply(offsetAccum)
-        return offsetAccum
 
-    # determine the rotation of any bone in worldspace
-    # TESTED
-    def __getBoneRotWS(self, poses):
-        pose = poses[self.armParentNI.blenderObjName]
-        # get the armature's rotation
-        armRot = self.armParentNI.getNodeRotWS(poses)
-        # get the pose rotation and rotate into worldspace
-        bRot = (toTorqueQuat(pose.bones[self.originalBoneName].poseMatrix.rotationPart().toQuat().inverse()) * armRot)
-        return bRot
+def __getNodeRestScale(self, poses):
+    if self.blenderType == "object":
+        retVal = self.__getObjectScale()
+    elif self.blenderType == "bone":
+        retVal = self.__getBoneScale(poses)
+    return retVal
 
-    # determine the scale of any bone (relative to local axies)
-    # TESTED
-    def __getBoneScale(self, poses):
-        pose = poses[self.armParentNI.blenderObjName]
-        bScale = toTorqueVec(pose.bones[self.originalBoneName].size)
-        return bScale
 
-    # determine the location of an object node in worldspace
-    # TESTED
-    def __getObjectLocWS(self, poses=None):
-        bLoc = toTorqueVec(Blender.Object.Get(self.blenderObjName).getMatrix('worldspace').translationPart())
-        return bLoc
+# ***********************
+# determine the position of any bone in worldspace
+# TESTED
+def __getBoneLocWS(self, poses):
+    pose = poses[self.armParentNI.blenderObjName]
+    # get the armature's rotation
+    armRot = self.armParentNI.getNodeRotWS(poses)
+    # get the pose location
+    bTrans = armRot.apply(toTorqueVec(pose.bones[self.originalBoneName].location))
+    # Scale by armature's scale
+    bTrans = self.__fixBoneOffset(bTrans, self.armParentNI, poses)
+    # add on armature pivot to translate into worldspace
+    bTrans = bTrans + self.armParentNI.getNodeLocWS(poses)
+    return bTrans
 
-    # determine the rotation of an object node in worldspace
-    # TESTED
-    def __getObjectRotWS(self, poses=None):
-        bRot = toTorqueQuat(
-            Blender.Object.Get(self.blenderObjName).getMatrix('worldspace').rotationPart().toQuat()).inverse()
-        return bRot
 
-    # determine the scale of any object (relative to local axies)
-    # TESTED
-    def __getObjectScale(self):
-        bLoc = toTorqueVec([Blender.Object.Get(self.blenderObjName).SizeX, \
-                            Blender.Object.Get(self.blenderObjName).SizeY, \
-                            Blender.Object.Get(self.blenderObjName).SizeZ])
-        return bLoc
+def __fixBoneOffset(self, bOffset, armNI, poses):
+    offsetAccum = bOffset
+    # add the armature's own scale
+    armScale = armNI.getNodeScale(poses, False)
+    offsetAccum = Vector(offsetAccum.members[0] * armScale.members[0], offsetAccum.members[1] * armScale.members[1],
+                         offsetAccum.members[2] * armScale.members[2])
+    for parentNI in armNI.parentStack:
+        scale = parentNI.getNodeScale(poses, False)
+        # this early out is a big win!
+        if scale.eqDelta(Vector(1.0, 1.0, 1.0), 0.02): continue
+        # get parent rotation and inverse rotation
+        rot = parentNI.getNodeRotWS(poses)
+        rotInv = rot.invert()
+        # rotate the offset into parent bone's space
+        offsetAccum = rotInv.apply(offsetAccum)
+        # apply the parent node's scale to the offset.
+        offsetAccum = Vector(offsetAccum[0] * scale[0], offsetAccum[1] * scale[1], offsetAccum[2] * scale[2])
+        # rotate back into worldspace for next iteration :-)
+        offsetAccum = rot.apply(offsetAccum)
+    return offsetAccum
 
-    def getNodeScale(self, poses, delta=True):
-        if self.blenderType == "object":
-            retVal = self.__getObjectScale()
-        elif self.blenderType == "bone":
-            retVal = self.__getBoneScale(poses)
-        if delta:
-            # print self.restScale
-            retVal = Vector(retVal[0] / self.restScale[0], retVal[1] / self.restScale[1], retVal[2] / self.restScale[2])
-        return retVal
 
-    # bind loc/rot methods dynamically based on node type
-    def bindLocRotMethods(self):
-        if self.blenderType == "object":
-            self.getNodeLocWS = self.__getObjectLocWS
-            self.getNodeRotWS = self.__getObjectRotWS
-        elif self.blenderType == "bone":
-            self.getNodeLocWS = self.__getBoneLocWS
-            self.getNodeRotWS = self.__getBoneRotWS
+# determine the rotation of any bone in worldspace
+# TESTED
+def __getBoneRotWS(self, poses):
+    pose = poses[self.armParentNI.blenderObjName]
+    # get the armature's rotation
+    armRot = self.armParentNI.getNodeRotWS(poses)
+    # get the pose rotation and rotate into worldspace
+    bRot = (toTorqueQuat(pose.bones[self.originalBoneName].rotation_quaternion.invert()) * armRot)
+    return bRot
+
+
+# determine the scale of any bone (relative to local axies)
+# TESTED
+def __getBoneScale(self, poses):
+    pose = poses[self.armParentNI.blenderObjName]
+    bScale = toTorqueVec(pose.bones[self.originalBoneName].scale)
+    return bScale
+
+
+# determine the location of an object node in worldspace
+# TESTED
+def __getObjectLocWS(self, poses=None):
+    bLoc = toTorqueVec(bpy.data.objects[self.blenderObjName].matrix_world.to_translation())
+    return bLoc
+
+
+# determine the rotation of an object node in worldspace
+# TESTED
+def __getObjectRotWS(self, poses=None):
+    ep = bpy.data.objects[self.blenderObjName].rotation_quaternion
+    temp = mathutils.Quaternion([ep.x, ep.y, ep.z, ep.w])
+    temp.invert()
+    if temp is None:
+        raise Exception(temp)
+    bRot = toTorqueQuat(
+        temp)
+    return bRot
+
+
+# determine the scale of any object (relative to local axies)
+# TESTED
+def __getObjectScale(self):
+    bLoc = toTorqueVec(bpy.data.objects[self.blenderObjName].scale)
+    return bLoc
+
+
+def getNodeScale(self, poses, delta=True):
+    if self.blenderType == "object":
+        retVal = self.__getObjectScale()
+    elif self.blenderType == "bone":
+        retVal = self.__getBoneScale(poses)
+    if delta:
+        # print self.restScale
+        retVal = Vector(retVal[0] / self.restScale[0], retVal[1] / self.restScale[1], retVal[2] / self.restScale[2])
+    return retVal
+
+
+def test(self, poses=None):
+    print (self.blenderObjName)
+    return 'hi'
+
+# bind loc/rot methods dynamically based on node type
+def bindLocRotMethods(self):
+    import types
+    from types import MethodType
+
+    if self.blenderType == "object":
+        self.getNodeLocWS = types.MethodType(__getObjectLocWS, self)
+        self.getNodeRotWS = types.MethodType(__getObjectRotWS, self)
+        # setattr(self, 'getNodeLocWS', __getObjectLocWS)
+        # setattr(self, 'getNodeRotWS', __getObjectRotWS)
+    elif self.blenderType == "bone":
+        self.getNodeLocWS = types.MethodType(__getBoneLocWS, self)
+        self.getNodeRotWS = types.MethodType(__getBoneRotWS, self)
+        # setattr(self, 'getNodeLocWS', __getBoneLocWS)
+        # setattr(self, 'getNodeRotWS', __getBoneRotWS)
+    # setattr(self, 'testme', test)
+    # self.testme = types.MethodType(test, self)
+    # self.testme()
 
 
 # binds the above methods to the nodeInfo class imported from DtsSceneInfo.py.
 def bindDynamicMethods():
-    nodeInfoClass.__bases__ += (NodeTransformAddIn,)
+#    from types import MethodType
+    setattr(nodeInfoClass, '__getNodeRestScale', __getNodeRestScale)
+    setattr(nodeInfoClass, '__getObjectScale', __getObjectScale)
+    setattr(nodeInfoClass, 'getNodeScale', getNodeScale)
+    setattr(nodeInfoClass, '__fixBoneOffset', __fixBoneOffset)
+    setattr(nodeInfoClass, 'bindLocRotMethods', bindLocRotMethods)
+    setattr(nodeInfoClass, 'initRestScaleData', initRestScaleData)
     '''
     new.instancemethod(__getNodeRestScale, None, nodeInfoClass)
     nodeInfoClass.__dict__['__getNodeRestScale'] = __getNodeRestScale
@@ -326,7 +360,7 @@ def removeIpoScales(scaledIpoNames):
             pass
 
     # loop through each object in the scene and clear its scale if it uses an IPO in our list
-    for ob in Blender.Scene.GetCurrent().objects:
+    for ob in bpy.context.scene.objects:
         if ob.ipo != None:
             if ob.ipo.name in scaledIpoNames:
                 ob.SizeX = 1.0
@@ -334,8 +368,8 @@ def removeIpoScales(scaledIpoNames):
                 ob.SizeZ = 1.0
 
     # clear bone scales as well
-    for armOb in [x for x in Blender.Scene.GetCurrent().objects if x.type == 'Armature']:
-        tempPose = armOb.getPose()
+    for armOb in [x for x in bpy.context.scene.objects if x.type == 'ARMATURE']:
+        tempPose = armOb.pose
         for poseBone in list(tempPose.bones.values()):
             # reset the bone's transform
             poseBone.quat = bMath.Quaternion().identity()
@@ -434,7 +468,7 @@ class NodeTransformUtil:
         armPoses = {}
         for armNI in list(self.armatures.values()):
             arm = armNI.getBlenderObj()
-            armPoses[arm.name] = arm.getPose()
+            armPoses[arm.name] = arm.pose
 
         # init default scales - need these first, chicken and egg.
         for ni in list(self.nodes.values()):
@@ -525,7 +559,7 @@ class NodeTransformUtil:
                 nodeTransforms[0][1] = loc[1] - refLoc[1]
                 nodeTransforms[0][2] = loc[2] - refLoc[2]
                 # loc for blend animations is relative to the default transform of the node
-                frameTransforms[i][0] = refRot.inverse().apply(nodeTransforms[0])
+                frameTransforms[i][0] = refRot.invert().apply(nodeTransforms[0])
 
                 # scale
                 try:
@@ -542,7 +576,7 @@ class NodeTransformUtil:
                     frameTransforms[i][1][2] = 0.0
 
                 # rot
-                frameTransforms[i][2] = rot * refTransforms[i][2].inverse()
+                frameTransforms[i][2] = rot * refTransforms[i][2].invert()
 
         # correct scaled offsets for each frame
         '''
@@ -578,13 +612,14 @@ class NodeTransformUtil:
                 frameTransforms = transforms[-1]
 
                 # set the current frame
-                Blender.Set('curframe', fr)
+                # Blender.Set('curframe', fr)
+                bpy.context.scene.frame_set(fr)
 
                 # get poses for all armatures in the scene
                 armPoses = {}
                 for armNI in list(self.armatures.values()):
                     arm = armNI.getBlenderObj()
-                    armPoses[arm.name] = arm.getPose()
+                    armPoses[arm.name] = arm.pose
 
                 # get loc and scale for each node
                 for ni in orderedNIList:
@@ -606,14 +641,16 @@ class NodeTransformUtil:
                 frameTransforms = transforms[fr - startFrame]
 
                 # set the current frame
-                if Blender.Get('curframe') == fr: Blender.Set('curframe', fr + 1)
-                Blender.Set('curframe', fr)
+                # if Blender.Get('curframe') == fr: Blender.Set('curframe', fr + 1)
+                # Blender.Set('curframe', fr)
+                if bpy.context.scene.frame_current == fr: bpy.context.scene.frame_set(fr + 1)
+                bpy.context.scene.frame_set(fr)
 
                 # get poses for all armatures in the scene
                 armPoses = {}
                 for armNI in list(self.armatures.values()):
                     arm = armNI.getBlenderObj()
-                    armPoses[arm.name] = arm.getPose()
+                    armPoses[arm.name] = arm.pose
 
                 # get rot for each node
                 i = 0
@@ -633,13 +670,14 @@ class NodeTransformUtil:
                 frameTransforms = transforms[-1]
 
                 # set the current frame
-                Blender.Set('curframe', fr)
+                # Blender.Set('curframe', fr)
+                bpy.context.scene.frame_set(fr)
 
                 # get poses for all armatures in the scene
                 armPoses = {}
                 for armNI in list(self.armatures.values()):
                     arm = armNI.getBlenderObj()
-                    armPoses[arm.name] = arm.getPose()
+                    armPoses[arm.name] = arm.pose
 
                 # get loc and scale for each node
                 for ni in orderedNIList:
@@ -698,11 +736,11 @@ class NodeTransformUtil:
                     pLocWS = frameTransformsWS[pNI.tempIdx][0]
                     pRotWS = frameTransformsWS[pNI.tempIdx][2]
                     if correctScaledTransforms:
-                        locPS = pRotWS.inverse().apply(
+                        locPS = pRotWS.invert().apply(
                             self.correctScaledOffset(locWS - pLocWS, parentStacks[i], frameTransformsWS))
                     else:
-                        locPS = pRotWS.inverse().apply(locWS - pLocWS)
-                    rotPS = rotWS * pRotWS.inverse()
+                        locPS = pRotWS.invert().apply(locWS - pLocWS)
+                    rotPS = rotWS * pRotWS.invert()
                     frameTransformsPS.append([locPS, scale, rotPS])
                 i += 1
 
@@ -716,9 +754,9 @@ class NodeTransformUtil:
             scale = frameTransformsWS[pIdx][1]
             # this early out is a big win!
             if scale.eqDelta(Vector(1.0, 1.0, 1.0), 0.02): continue
-            # get parent rotation and inverse rotation
+            # get parent rotation and invert rotation
             rot = frameTransformsWS[pIdx][2]
-            rotInv = rot.inverse()
+            rotInv = rot.invert()
             # rotate the offset into parent bone's space
             offsetAccum = rotInv.apply(offsetAccum)
             # remove the parent bone's scale from the offset.
@@ -750,7 +788,7 @@ def toBlenderVec(v):
 
 
 def toTorqueQuat(q):
-    return Quaternion(q[1], q[2], q[3], q[0])
+    return Quaternion(q.x, q.y, q.z, q.w)
 
 
 def toBlenderQuat(q):
@@ -760,31 +798,31 @@ def toBlenderQuat(q):
 
 # --------- test functions ----------------
 def putEmptyAt(loc):
-    scene = Blender.Scene.GetCurrent()
+    scene = bpy.context.scene
     loc = toBlenderVec(loc)
     try:
-        Blender.Object.Get('Empty')
+        bpy.data.objects['Empty']
     except:
-        Blender.Object.New('Empty', 'Empty')
-    empty = Blender.Object.Get('Empty')
+        bpy.ops.object.new('Empty', 'Empty')
+    empty = bpy.data.objects['Empty']
     if not (empty in scene.getChildren()): scene.link(empty)
     empty.setLocation(loc.x, loc.y, loc.z)
     scene.update(1)
-    Blender.Window.RedrawAll()
+    bpy.context.scene.update()
 
 
 def setEmptyRot(rot):
-    scene = Blender.Scene.GetCurrent()
+    scene = bpy.context.scene
     rot = toBlenderQuat(rot)
     try:
-        Blender.Object.Get('Empty')
+        bpy.data.objects['Empty']
     except:
-        Blender.Object.New('Empty', 'Empty')
-    empty = Blender.Object.Get('Empty')
+        bpy.ops.object.new('Empty', 'Empty')
+    empty = bpy.data.objects['Empty']
     if not (empty in scene.getChildren()): scene.link(empty)
     # print rot
     # print rot.toMatrix()
     rot = rot.toMatrix().resize4x4()
     empty.setMatrix(rot)
     scene.update(1)
-    Blender.Window.RedrawAll()
+    bpy.context.scene.update()
