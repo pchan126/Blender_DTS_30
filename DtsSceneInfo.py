@@ -623,14 +623,16 @@ class SceneInfoClass:
 
         for ni in self.meshExportList:
             obj = ni.getBlenderObj()
-            if obj.type() != "MESH": continue
+            if obj.type != "MESH": continue
             objData = obj.data
             for slot in obj.material_slots:
-                matname == None
+                matName = None
                 mat = slot.material
-                if mat.active_texture.type == "IMAGE":
-                    matName = SceneInfoClass.stripImageExtension(mat.active_texture.image.filepath)
-                if matName != None: imageList.append(matName)
+                matName = mat.name
+                # if mat.active_texture.type == "IMAGE":
+                #     matName = SceneInfoClass.stripImageExtension(mat.active_texture.image.filepath)
+                if matName != None:
+                    imageList.append(matName)
 
             # for face in objData.polygon:
             #     matName = SceneInfoClass.getFaceDtsMatName(face, obj)
@@ -766,7 +768,7 @@ class SceneInfoClass:
 
     # find a named marker on the timeline
     def findMarker(markerName):
-        markedList = context.scene.timeline_markers
+        markedList = bpy.context.scene.timeline_markers
         for frameNum in markedList:
             markerNames = markedList[frameNum]
             for mn in markerNames:
@@ -780,7 +782,7 @@ class SceneInfoClass:
 
     # returns true if the given frame number has multiple markers
     def hasMultipleMarkers(frameNum):
-        markedList = context.scene.timeline_markers
+        markedList = bpy.context.scene.timeline_markers
         retVal = False
         try:
             markerNames = markedList[frameNum]
@@ -797,7 +799,7 @@ class SceneInfoClass:
     # returns True if a frame on the timeline has no markers.
     def isNotMarked(frameNum):
         retVal = True
-        markedList = context.scene.timeline_markers
+        markedList = bpy.context.scene.timeline_markers
         try:
             x = markedList[frameNum]
         except:
@@ -813,7 +815,7 @@ class SceneInfoClass:
     # in the form {'mySequence':[0,10], ...}
     def getSequenceInfo():
         foundSequences = []
-        markedList = context.scene.timeline_markers
+        markedList = bpy.context.scene.timeline_markers
 
         sequences = {}
 

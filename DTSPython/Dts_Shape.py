@@ -119,7 +119,9 @@ class MaterialList:
 		return False
 
 	def findMaterial(self, name):
+		Torque_Util.dump_writeln("Find Material %d " % len(self.materials) + name)
 		for m in range(0, len(self.materials)):
+			Torque_Util.dump_writeln("Material %d " % m + self.materials[m].name )
 			if self.materials[m].name == name:
 				return m
 		return None

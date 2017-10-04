@@ -190,26 +190,29 @@ class BlenderMesh(DtsMesh):
 
                 isTwoSided = False
                 if not ignoreDblSided:
-                    if (msh.mode & NMesh.Modes.TWOSIDED):
-                        isTwoSided = True
-                    else:
-                        x = 0
-                        try:
-                            x = (face.mode & NMesh.FaceModes.TWOSIDE)
-                        except:
-                            pass
-                        if x != 0: isTwoSided = True
+                    if mat is not None:
+                        if not mat.game_settings.use_backface_culling:
+                            isTwoSided = True
+                    # if (msh.mode & NMesh.Modes.TWOSIDED):
+                    #     isTwoSided = True
+                    # else:
+                    #     x = 0
+                    #     try:
+                    #         x = (face.mode & NMesh.FaceModes.TWOSIDE)
+                    #     except:
+                    #         pass
+                    #     if x != 0: isTwoSided = True
 
                 # we've got a quad
                 if (len(face.vertices) > 3):
                     # convert the quad into two triangles
                     # first triangle
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 2, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 2, useSticky))
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 1, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 1, useSticky))
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 0, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 0, useSticky))
 
                     # if we're not using triangle lists, first insert the primitive for the first triangle
                     if not useLists: self.primitives.append(pr)
@@ -229,19 +232,19 @@ class BlenderMesh(DtsMesh):
 
                     # second triangle
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 3, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 3, useSticky))
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 2, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 2, useSticky))
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 0, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 0, useSticky))
                 else:
                     # add the triangle normally.
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 2, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 2, useSticky))
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 1, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 1, useSticky))
                     self.indices.append(
-                        self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 0, useSticky))
+                        self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 0, useSticky))
 
                 if not useLists:
                     self.primitives.append(pr)
@@ -305,11 +308,11 @@ class BlenderMesh(DtsMesh):
             if (len(face.vertices) > 3):
                 # convert the quad into two triangles
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 2, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 2, useSticky, True))
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 1, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 1, useSticky, True))
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 0, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 0, useSticky, True))
 
                 # add the first triangle to the primitives and duplicate if doublesided.
                 self.primitives.append(pr)
@@ -317,19 +320,19 @@ class BlenderMesh(DtsMesh):
                 # second triangle
                 pr = Primitive(len(self.indices), 3, pr.matindex)
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 3, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 3, useSticky, True))
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 2, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 2, useSticky, True))
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 0, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 0, useSticky, True))
             else:
                 # add the triangle normally.
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 2, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 2, useSticky, True))
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 1, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 1, useSticky, True))
                 self.indices.append(
-                    self.appendVertex(shape, msh, rootBone, matrix, scaleFactor, face, 0, useSticky, True))
+                    self.appendVertex(shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, 0, useSticky, True))
 
             # Finally add primitive
             self.primitives.append(pr)
@@ -405,7 +408,7 @@ class BlenderMesh(DtsMesh):
 
         return weightDictionary, hasWeights
 
-    def appendVertex(self, shape, msh, rootBone, matrix, scaleFactor, face, faceIndex, useSticky, isCollision=False):
+    def appendVertex(self, shape, blenderObject, msh, rootBone, matrix, scaleFactor, face, faceIndex, useSticky, isCollision=False):
         # Use Face coords if requested
         if not useSticky:
             # The face may not have texture coordinate, in which case we assign 0,0
@@ -419,19 +422,19 @@ class BlenderMesh(DtsMesh):
 
         # Add sticky coords *if* they are available
         elif msh.hasVertexUV():
-            texture = Vector2(msh.verts[face.vertices[faceIndex].index].uvco[0],
-                              msh.verts[face.v[faceIndex].index].uvco[1])
+            texture = Vector2(msh.vertices[face.vertices[faceIndex]].uvco[0],
+                              msh.vertices[face.vertices[faceIndex]].uvco[1])
         # We were supposed to use sticky coords, but none were found
         else:
             texture = Vector2(float(0.0), float(0.0))
 
-        vert = msh.verts[face.vertices[faceIndex].index]
+        vert = msh.vertices[face.vertices[faceIndex]]
 
         # Compute vert normals
-        if face.smooth:
-            normal = Vector(vert.no[0], vert.no[1], vert.no[2])
+        if face.use_smooth:
+            normal = Vector(vert.normal[0], vert.normal[1], vert.normal[2])
         else:
-            normal = Vector(face.no[0], face.no[1], face.no[2])
+            normal = Vector(face.normal[0], face.normal[1], face.normal[2])
 
         if self.hasAnisoScale:
             # correct (anisotropic) scaled normals
@@ -443,7 +446,7 @@ class BlenderMesh(DtsMesh):
         normal.normalize()
 
         # See if the vertex/texture/normal combo already exists..
-        bvIndex = face.vertices[faceIndex].index
+        bvIndex = face.vertices[faceIndex]
         # if the bVertList already contains this blender vert,
         sharedVertsIdx = bisect_left(self.bVertList, bvIndex)
         if sharedVertsIdx < len(self.bVertList) and self.bVertList[sharedVertsIdx] == bvIndex:

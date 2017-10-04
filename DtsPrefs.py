@@ -52,7 +52,7 @@ class prefsClass(dict):
         # todo - read in prefs from text buffer here?
         self.loadPrefs()
         self.__updateDefunctSequenceCountdowns()
-        # self.initPrefs()
+        self.initPrefs()
         pass
 
     #################################################
@@ -745,7 +745,7 @@ class prefsClass(dict):
     # gets current dts material data from blender and updates preferencees
     def refreshMaterialPrefs(self):
         SceneInfo = DtsGlobals.SceneInfo
-        # SceneInfo.refreshAll()
+        SceneInfo.refreshAll()
 
         # startTime = Blender.sys.time()
         imageList = SceneInfo.getDtsMaterials()
@@ -824,7 +824,7 @@ class prefsClass(dict):
                 pmb['reflectance'] = 0.0
                 pmb['detailScale'] = 1.0
 
-                if bmat.getEmit() > 0.0:
+                if bmat.emit > 0.0:
                     pmb['SelfIlluminating'] = True
                 else:
                     pmb['SelfIlluminating'] = False
@@ -834,15 +834,17 @@ class prefsClass(dict):
                 pmb['DetailTex'] = None
 
                 # Look at the texture channels if they exist
-                textures = bmat.getTextures()
+                textures = bmat.texture_slots.values()
                 if len(textures) > 0:
                     if textures[0] != None:
-                        if textures[0].tex.image != None:
-                            pmb['BaseTex'] = SceneInfoClass.stripImageExtension(textures[0].tex.image.getName())
+                        if textures[0].texture.type == "IMAGE":
+                            pmb['BaseTex'] = SceneInfoClass.stripImageExtension(textures[0].texture.image.filepath)
+                            # if mat.active_texture.type == "IMAGE":
+                            #     matName = SceneInfoClass.stripImageExtension(mat.active_texture.image.filepath)
                         else:
                             pmb['BaseTex'] = None
 
-                        if (textures[0] != None) and (textures[0].tex.type == Texture.Types.IMAGE):
+                        if (textures[0] != None) and (textures[0].texture.type == "IMAGE"):
                             # Translucency?
                             if textures[0].mapto & Texture.MapTo.ALPHA:
                                 pmb['Translucent'] = True

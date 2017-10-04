@@ -369,13 +369,13 @@ class BlenderShape(DtsShape):
                            (self.preferences['PrimType'] == "TriLists" or self.preferences['PrimType'] == "TriStrips"))
 
         # Add mesh flags based on blender object game properties.
-        if len(o.game_properties) > 0:
+        if len(o.game.properties) > 0:
             propNames = []
-            for prop in o.game_properties:
-                if (prop.type.lower() == "bool" and prop.data == True) \
-                        or (prop.type.lower() == "int" and prop.data != 0) \
-                        or (prop.type.lower() == "float" and prop.data != 0.0) \
-                        or (prop.type.lower() == "string" and prop.data.lower() == "true"):
+            for prop in o.game.properties:
+                if (prop.type == 'BOOL' and prop.value == True) \
+                        or (prop.type == 'INT' and prop.value != 0) \
+                        or (prop.type == 'FLOAT' and prop.value != 0.0) \
+                        or (prop.type == 'STRING' and prop.value.lower() == "true"):
                     propNames.append(prop.getName())
             tmsh.setBlenderMeshFlags(propNames)
 
@@ -712,7 +712,7 @@ class BlenderShape(DtsShape):
                 self.calculateCenter()
                 self.calculateRadius()
                 self.calculateTubeRadius()
-        except ValueError:
+        except KeyError:
             self.calculateBounds()
             self.calculateCenter()
             self.calculateRadius()
@@ -1513,19 +1513,21 @@ class BlenderShape(DtsShape):
         elif object.type == "MESH":
             return self.addDetailLevel([object], -1)
         else:
-            Torque_Util.writeln("addObject() failed for type %s!" % object.type)
+            Torque_Util.dump_writeln("addObject() failed for type %s!" % object.type)
             return False
 
     # Material addition
     def addMaterial(self, imageName):
         if imageName == None:
-            Torque_Util.writeln("addMaterial() returning none")
+            Torque_Util.dump_writeln("addMaterial() returning none")
             return None
 
         # find the material associated with the texture image file name
         material = None
         try:
+            Torque_Util.dump_writeln("test1")
             mat = self.preferences['Materials'][imageName]
+            Torque_Util.dump_writeln("test2")
             flags = 0x00000000
             if mat['SWrap'] == True: flags |= dMaterial.SWrap
             if mat['TWrap'] == True: flags |= dMaterial.TWrap

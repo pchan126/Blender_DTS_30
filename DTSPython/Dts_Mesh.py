@@ -565,9 +565,9 @@ class DtsMesh:
             # Note : we only need to write
             # some things IF we don't have a parent
             dstream.storeCheck()
-            dstream.writes32(self.numFrames)  # S32
-            dstream.writes32(self.matFrames)  # S32
-            dstream.writes32(self.parent)  # S32
+            dstream.writes32(int(self.numFrames))  # S32
+            dstream.writes32(int(self.matFrames))  # S32
+            dstream.writes32(int(self.parent))  # S32
             dstream.writeBox(self.bounds)  # Box
             dstream.writePoint3F(self.center)  # Vector
             dstream.writef32(self.radius)  # Float (32bit)

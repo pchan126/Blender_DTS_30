@@ -48,7 +48,7 @@ from .Dts_Mesh import Cluster, Primitive
 
 # Snagged from a mailing list
 def little_endian():
-    return ord(array("i", [1]).tostring()[0])
+    return sys.byteorder == 'little'
 
 
 class DtsStream:
@@ -56,10 +56,10 @@ class DtsStream:
 
     def __init__(self, fname, read=False, version=24):
         # check python version and select correct write32 method
-        if sys.version.split(" ")[0][0:3] == "2.5":
-            self.write32 = self.write32_py25
-        else:
+        if sys.version.split(" ")[0][0:3] == "2.4":
             self.write32 = self.write32_py24
+        else:
+            self.write32 = self.write32_py25
         if read:
             self.fs = open(fname, "rb")
             self.DTSVersion = 24  # Biggest version we can read
@@ -140,9 +140,9 @@ class DtsStream:
         # Write the resulting data to the file
         hdr = array('i')
         hdr.append(self.DTSVersion | (self.mExporterVersion << 16))
-        hdr.append(totalSize)
-        hdr.append(offset16)
-        hdr.append(offset8)
+        hdr.append(int(totalSize))
+        hdr.append(int(offset16))
+        hdr.append(int(offset8))
         # Write Buffers to fs
         # ByteSwap buffers if neccesary
 
@@ -547,7 +547,7 @@ class DtsStream:
         self.writef32(value.size)
         self.writef32(value.avgError)
         self.writef32(value.maxError)
-        self.writes32(value.polyCount)
+        self.writes32(int(value.polyCount))
 
     def readString(self):
         # Read in string... from Dts Stream

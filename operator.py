@@ -283,131 +283,131 @@ def doExport(context, filePath, config):
         raise
     '''
 
-
-#
-#
-#     '''
-#         Functions to export shape and load script
-#     '''
-#
-#
+    #
+    #
+    #     '''
+    #         Functions to export shape and load script
+    #     '''
+    #
+    #
     # -------------------------------------------------------------------------------------------------
-    def handleScene(issueWarnings=False):
-        Prefs = DtsGlobals.Prefs
-        # DtsGlobals.SceneInfo = SceneInfoClass(Prefs)
-        SceneInfo = DtsGlobals.SceneInfo
-        # if SceneInfo != None: SceneInfo.clear()
+def handleScene(issueWarnings=False):
+    Prefs = DtsGlobals.Prefs
+    DtsGlobals.SceneInfo = SceneInfoClass(Prefs)
+    SceneInfo = DtsGlobals.SceneInfo
+    # if SceneInfo != None: SceneInfo.clear()
 
 
-        # Torque_Util.dump_writeln("Processing Scene...")
-        # What we do here is clear any existing export tree, then create a brand new one.
-        # This is useful if things have changed.
-        scn = bpy.context.scene
-        scn.update(1)
-        # updateOldPrefs()
-        # Torque_Util.dump_writeln("Cleaning Preference Keys")
-        # cleanKeys()
-        # createActionKeys()
+    # Torque_Util.dump_writeln("Processing Scene...")
+    # What we do here is clear any existing export tree, then create a brand new one.
+    # This is useful if things have changed.
+    scn = bpy.context.scene
+    scn.update()
+    # updateOldPrefs()
+    # Torque_Util.dump_writeln("Cleaning Preference Keys")
+    # cleanKeys()
+    # createActionKeys()
 
-        SceneInfo.refreshAll(issueWarnings)
-#
-#
-#     # Prefs.refreshSequencePrefs()
-#     # Prefs.refreshMaterialPrefs()
-#
-#     def export():
-#         SceneInfo = DtsGlobals.SceneInfo
-#         Prefs = DtsGlobals.Prefs
-#         pathSeparator = SceneInfoClass.getPathSeparator()
-#
-#         if DtsGlobals.Debug:
-#             Torque_Util.dump_setout("stdout")
-#         else:
-#             # double check the file name before opening the log
-#             if Prefs['exportBasename'] == "":
-#                 Prefs['exportBasename'] = SceneInfoClass.getDefaultBaseName()
-#
-#             try:
-#                 x = Prefs['LogToOutputFolder']
-#             except KeyError:
-#                 Prefs['LogToOutputFolder'] = True
-#             if Prefs['LogToOutputFolder']:
-#                 Torque_Util.dump_setout("%s%s%s.log" % (Prefs['exportBasepath'], pathSeparator, Prefs['exportBasename']))
-#             else:
-#                 Torque_Util.dump_setout("%s.log" % noext(Blender.Get("filename")))
-#
-#         Torque_Util.dump_writeln("Torque Exporter %s " % DtsGlobals.Version)
-#         Torque_Util.dump_writeln("Using blender, version %s" % Blender.Get('version'))
-#
-#         # refresh prefs
-#
-#         Torque_Util.dump_writeln("Exporting...")
-#         print("Exporting...")
-#         # switch out of edit mode if we are in edit mode
-#         Window.EditMode(0)
-#
-#         # refresh all data.
-#         handleScene(True)
-#         Prefs.refreshSequencePrefs()
-#         Prefs.refreshMaterialPrefs()
-#         Prefs.savePrefs()
-#
-#         cur_progress = Common_Gui.Progress()
-#
-#         if SceneInfo != None:
-#             cur_progress.pushTask("Done", 1, 1.0)
-#
-#             # start the export
-#             doExport(cur_progress)
-#
-#             cur_progress.update()
-#             cur_progress.popTask()
-#             Torque_Util.dump_writeln("Finished.")
-#         else:
-#             Torque_Util.dump_writeErr("Error. Not processed scene yet!")
-#
-#         del cur_progress
-#
-#         if Torque_Util.numErrors > 0 or Torque_Util.numWarnings > 0:
-#             message = ("Export finished with %i error(s) and %s warning(s). Read the log file for more information." % (
-#             Torque_Util.numErrors, Torque_Util.numWarnings))
-#             print(message)
-#             if Prefs["ShowWarningErrorPopup"]:
-#                 message += "%t|Continue|Do not show this message again"
-#                 opt = Blender.Draw.PupMenu(message)
-#                 if opt == 2:
-#                     Prefs["ShowWarningErrorPopup"] = False
-#                     # refresh the state of the button on the general panel
-#                     GeneralControls.refreshAll()
-#             Torque_Util.numWarnings = 0
-#             Torque_Util.numErrors = 0
-#         else:
-#             print("Finished.  See generated log file for details.")
-#
-#         # Reselect any objects that are currently selected.
-#         # this prevents a strange bug where objects are selected after
-#         # export, but behave as if they are not.
-#         if Blender.Object.GetSelected() != None:
-#             for ob in Blender.Object.GetSelected():
-#                 ob.select(True)
-#
-#         Torque_Util.dump_finish()
-#
-#
-#     '''
-#         Entry Point
-#     '''
-#     # -------------------------------------------------------------------------------------------------
-#
-#     if DtsGlobals.Profiling:
-#         try:
-#             import profile
-#             import __main__
-#             import pstats
-#         except:
-#             Profiling = False
-#
-#
+    SceneInfo.refreshAll(issueWarnings)
+
+    #
+    #
+    #     # Prefs.refreshSequencePrefs()
+    #     # Prefs.refreshMaterialPrefs()
+    #
+    #     def export():
+    #         SceneInfo = DtsGlobals.SceneInfo
+    #         Prefs = DtsGlobals.Prefs
+    #         pathSeparator = SceneInfoClass.getPathSeparator()
+    #
+    #         if DtsGlobals.Debug:
+    #             Torque_Util.dump_setout("stdout")
+    #         else:
+    #             # double check the file name before opening the log
+    #             if Prefs['exportBasename'] == "":
+    #                 Prefs['exportBasename'] = SceneInfoClass.getDefaultBaseName()
+    #
+    #             try:
+    #                 x = Prefs['LogToOutputFolder']
+    #             except KeyError:
+    #                 Prefs['LogToOutputFolder'] = True
+    #             if Prefs['LogToOutputFolder']:
+    #                 Torque_Util.dump_setout("%s%s%s.log" % (Prefs['exportBasepath'], pathSeparator, Prefs['exportBasename']))
+    #             else:
+    #                 Torque_Util.dump_setout("%s.log" % noext(Blender.Get("filename")))
+    #
+    #         Torque_Util.dump_writeln("Torque Exporter %s " % DtsGlobals.Version)
+    #         Torque_Util.dump_writeln("Using blender, version %s" % Blender.Get('version'))
+    #
+    #         # refresh prefs
+    #
+    #         Torque_Util.dump_writeln("Exporting...")
+    #         print("Exporting...")
+    #         # switch out of edit mode if we are in edit mode
+    #         Window.EditMode(0)
+    #
+    #         # refresh all data.
+    #         handleScene(True)
+    #         Prefs.refreshSequencePrefs()
+    #         Prefs.refreshMaterialPrefs()
+    #         Prefs.savePrefs()
+    #
+    #         cur_progress = Common_Gui.Progress()
+    #
+    #         if SceneInfo != None:
+    #             cur_progress.pushTask("Done", 1, 1.0)
+    #
+    #             # start the export
+    #             doExport(cur_progress)
+    #
+    #             cur_progress.update()
+    #             cur_progress.popTask()
+    #             Torque_Util.dump_writeln("Finished.")
+    #         else:
+    #             Torque_Util.dump_writeErr("Error. Not processed scene yet!")
+    #
+    #         del cur_progress
+    #
+    #         if Torque_Util.numErrors > 0 or Torque_Util.numWarnings > 0:
+    #             message = ("Export finished with %i error(s) and %s warning(s). Read the log file for more information." % (
+    #             Torque_Util.numErrors, Torque_Util.numWarnings))
+    #             print(message)
+    #             if Prefs["ShowWarningErrorPopup"]:
+    #                 message += "%t|Continue|Do not show this message again"
+    #                 opt = Blender.Draw.PupMenu(message)
+    #                 if opt == 2:
+    #                     Prefs["ShowWarningErrorPopup"] = False
+    #                     # refresh the state of the button on the general panel
+    #                     GeneralControls.refreshAll()
+    #             Torque_Util.numWarnings = 0
+    #             Torque_Util.numErrors = 0
+    #         else:
+    #             print("Finished.  See generated log file for details.")
+    #
+    #         # Reselect any objects that are currently selected.
+    #         # this prevents a strange bug where objects are selected after
+    #         # export, but behave as if they are not.
+    #         if Blender.Object.GetSelected() != None:
+    #             for ob in Blender.Object.GetSelected():
+    #                 ob.select(True)
+    #
+    #         Torque_Util.dump_finish()
+    #
+    #
+    #     '''
+    #         Entry Point
+    #     '''
+    #     # -------------------------------------------------------------------------------------------------
+    #
+    #     if DtsGlobals.Profiling:
+    #         try:
+    #             import profile
+    #             import __main__
+    #             import pstats
+    #         except:
+    #             Profiling = False
+    #
+    #
     # def entryPoint(a):
     #     # HAVE TO RESET THIS SINCE IT CAN PERSIST BETWEEN FILE LOADS,
     #     # CAUSING ALL KINDS OF PROBLEMS !!!
@@ -748,6 +748,9 @@ class DTSExporter(bpy.types.Operator):
         else: return val
 
     def invoke(self, context, event):
+        from .DtsPrefs import prefsClass
+        DtsGlobals.Prefs = prefsClass()
+        Prefs = DtsGlobals.Prefs
         if not self.filepath:
             self.filepath = bpy.path.ensure_ext(bpy.data.filepath, ".dts")
         WindowManager = context.window_manager

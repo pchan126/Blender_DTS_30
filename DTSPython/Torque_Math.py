@@ -704,9 +704,12 @@ else:
             #      V
             # U = ---
             #     |V|
-            return self / self.length()
+            return Vector(
+                ( self[0] / self.length()),
+                ( self[1] / self.length()),
+                ( self[2] / self.length()))
 
-        # I/O
+            # I/O
         def read(self, fs):
             p1, p2, p3 = struct.unpack('<fff', fs.read(calcsize('<fff')))
             self.members = [p1, p2, p3]
