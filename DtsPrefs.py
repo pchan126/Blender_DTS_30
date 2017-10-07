@@ -846,7 +846,7 @@ class prefsClass(dict):
 
                         if (textures[0] != None) and (textures[0].texture.type == "IMAGE"):
                             # Translucency?
-                            if textures[0].mapto & Texture.MapTo.ALPHA:
+                            if textures[0].use_map_alpha:
                                 pmb['Translucent'] = True
                                 if bmat.getAlpha() < 1.0:
                                     pmb['Additive'] = True
@@ -856,12 +856,9 @@ class prefsClass(dict):
                                 pmb['Translucent'] = False
                                 pmb['Additive'] = False
                             # Disable mipmaps?
-                            if not (textures[0].tex.imageFlags & Texture.ImageFlags.MIPMAP):
-                                pmb['NoMipMap'] = True
-                            else:
-                                pmb['NoMipMap'] = False
+                            pmb['NoMipMap'] = not textures[0].texture.use_mipmap
 
-                            if bmat.getRef() > 0 and (textures[0].mapto & Texture.MapTo.REF):
+                            if bmat.diffuse_intensity > 0 and (textures[0].use_map_diffuse):
                                 pmb['NeverEnvMap'] = False
 
                     pmb['ReflectanceMapFlag'] = False
@@ -871,31 +868,31 @@ class prefsClass(dict):
                         texture_obj = textures[i]
                         if texture_obj == None: continue
                         # Figure out if we have an Image
-                        if texture_obj.tex.type != Texture.Types.IMAGE:
+                        if texture_obj.texture.type != 'IMAGE':
                             continue
 
                         # Determine what this texture is used for
                         # A) We have a reflectance map
-                        if (texture_obj.mapto & Texture.MapTo.REF):
+                        if (texture_obj.use_map_diffuse):
                             # We have a reflectance map
                             pmb['ReflectanceMapFlag'] = True
                             pmb['NeverEnvMap'] = False
-                            if textures[0].tex.image != None:
-                                pmb['RefMapTex'] = SceneInfoClass.stripImageExtension(textures[i].tex.image.getName())
+                            if textures[0].texture.type == 'IMAGE':
+                                pmb['RefMapTex'] = SceneInfoClass.stripImageExtension(textures[i].texture.image.filepath)
                             else:
                                 pmb['RefMapTex'] = None
                         # B) We have a normal map (basically a 3d bump map)
-                        elif (texture_obj.mapto & Texture.MapTo.NOR):
+                        elif (texture_obj.use_map_normal):
                             pmb['BumpMapFlag'] = True
-                            if textures[0].tex.image != None:
-                                pmb['BumpMapTex'] = SceneInfoClass.stripImageExtension(textures[i].tex.image.getName())
+                            if textures[0].texture.type == 'IMAGE':
+                                pmb['BumpMapTex'] = SceneInfoClass.stripImageExtension(textures[i].texture.image.filepath)
                             else:
                                 pmb['BumpMapTex'] = None
                         # C) We have a texture; Lets presume its a detail map (since its laid on top after all)
                         else:
                             pmb['DetailMapFlag'] = True
-                            if textures[0].tex.image != None:
-                                pmb['DetailTex'] = SceneInfoClass.stripImageExtension(textures[i].tex.image.getName())
+                            if textures[0].texture.type == 'IMAGE':
+                                pmb['DetailTex'] = SceneInfoClass.stripImageExtension(textures[i].texture.image.filepath)
                             else:
                                 pmb['DetailTex'] = None
 

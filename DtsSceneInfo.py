@@ -292,7 +292,7 @@ class SceneInfoClass:
                         break
 
         # always add bone nodes
-        if (bObjType == 'Armature'):
+        if (bObjType == 'ARMATURE'):
             tempBones = {}
             # add armature bones if needed
             armDb = obj.data
@@ -301,8 +301,9 @@ class SceneInfoClass:
 
         # add child trees
         for child in [x for x in bpy.context.scene.objects if x.parent == obj]:
-            parentBoneName = child.getParentBoneName()
-            if (obj.type == 'ARMATURE') and (parentBoneName != None):
+            parentBoneName = child.parent.name
+            dump_writeln("parentBoneName " + parentBoneName + " childname " + child.name)
+            if (obj.type == 'ARMATURE') and (parentBoneName != None) and (parentBoneName in tempBones):
                 parentNode = tempBones[parentBoneName]
                 self.__addTree(child, parentNode)
             else:
@@ -310,6 +311,7 @@ class SceneInfoClass:
 
     # adds a bone tree to the allThings list recursively, for internal use only
     def __addBoneTree(self, blenderObj, parentNI, boneOb, armDb, armParentNI, boneDictionary):
+        dump_writeln("addBoneTree " + boneOb.name)
         n = nodeInfoClass(boneOb.name, 'bone', blenderObj, parentNI, armParentNI)
         boneDictionary[boneOb.name] = n
         self.allThings.append(n)
@@ -1245,7 +1247,7 @@ class SceneInfoClass:
         hasArmatureDeform = False
         for mod in o.modifiers:
             if mod.type == 'ARMATURE':
-                targetObj = mod[Modifier.Settings.OBJECT]
+                targetObj = mod.object
                 if targetObj != None and targetObj.type == 'ARMATURE':
                     targets.append(self.armatures[targetObj.name])
         # Check for an armature deform parent
@@ -1347,6 +1349,6 @@ class SceneInfoClass:
             # find the armature modifier(s)
             for mod in o.modifiers:
                 if mod.type == 'ARMATURE':
-                    if mod[Modifier.Settings.OBJECT].name in badArmNameList:
-                        warnings.append([o.name, mod[Modifier.Settings.OBJECT].name])
+                    if mod.object.name in badArmNameList:
+                        warnings.append([o.name, mod.object.name])
         return warnings

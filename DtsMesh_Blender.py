@@ -75,7 +75,7 @@ class BlenderMesh(DtsMesh):
         # self.mainMaterial = None	# For determining material ipo track to use for ObjectState visibility animation
         ignoreDblSided = False
         if self.isSkinned:
-            self.weightDictionary, hasWeights = self.createWeightDictionary(msh);
+            self.weightDictionary, hasWeights = self.createWeightDictionary(blenderObject, msh);
 
         # Warn if we've got a skinned mesh with no vertex groups.
         if isSkinned and not hasWeights:
@@ -364,24 +364,26 @@ class BlenderMesh(DtsMesh):
     def __del__(self):
         DtsMesh.__del__(self)
 
-    def createWeightDictionary(self, mesh):
+    def createWeightDictionary(self, blenderObject, mesh):
         weightDictionary = {}
 
         transDict = DtsGlobals.SceneInfo.getVGroupTransDict()
 
         boneList = []
         hasWeights = False
+
         for ob in bpy.data.objects:
-            if ob.type != 'ARMATURE':
+            if ob.type == 'ARMATURE':
                 for b in list(ob.data.bones):
                     boneList.append(b.name)
         # for arm in list(Blender.Armature.Get().values()):
 
-        for i in range(len(mesh.verts)):
+        for i in range(len(mesh.vertices)):
             weightDictionary[i] = []
 
         # translate groups names, if no tranlation is available, ignore the group
-        originalGroups = mesh.getVertGroupNames()
+        # originalGroups = mesh.getVertGroupNames()
+        originalGroups = [g.name for g in blenderObject.vertex_groups]
         warnList = []
         for i in range(0, len(originalGroups)):
             oGroup = originalGroups[i]
@@ -392,10 +394,13 @@ class BlenderMesh(DtsMesh):
                 warnList.append(oGroup)
 
             if tGroup != None:
-                for vert in mesh.getVertsFromGroup(oGroup, 1):
-                    index, weight = vert[0], vert[1]
-                    weightDictionary[index].append((tGroup, weight))
+                for vert in mesh.vertices:
+                    weightDictionary[vert.group].append((tGroup, vert.weight))
                     hasWeights = True
+
+                    # index, weight = vert[0], vert.groups.
+                    # weightDictionary[index].append((tGroup, weight))
+                    # hasWeights = True
 
         if len(warnList) > 0:
             warnString = "\n  ****************************************************************************\n" \

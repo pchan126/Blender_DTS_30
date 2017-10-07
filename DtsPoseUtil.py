@@ -100,7 +100,11 @@ def __getBoneRotWS(self, poses):
     # get the armature's rotation
     armRot = self.armParentNI.getNodeRotWS(poses)
     # get the pose rotation and rotate into worldspace
-    bRot = (toTorqueQuat(pose.bones[self.originalBoneName].rotation_quaternion.invert()) * armRot)
+    ep = pose.bones[self.originalBoneName].rotation_quaternion
+    temp = mathutils.Quaternion([ep.x, ep.y, ep.z, ep.w])
+    temp.invert()
+
+    bRot = toTorqueQuat(temp.cross(armRot))
     return bRot
 
 
@@ -181,6 +185,7 @@ def bindDynamicMethods():
     setattr(nodeInfoClass, '__getObjectScale', __getObjectScale)
     setattr(nodeInfoClass, 'getNodeScale', getNodeScale)
     setattr(nodeInfoClass, '__fixBoneOffset', __fixBoneOffset)
+    setattr(nodeInfoClass, '__getBoneScale', __getBoneScale)
     setattr(nodeInfoClass, 'bindLocRotMethods', bindLocRotMethods)
     setattr(nodeInfoClass, 'initRestScaleData', initRestScaleData)
     '''
@@ -736,11 +741,15 @@ class NodeTransformUtil:
                     pLocWS = frameTransformsWS[pNI.tempIdx][0]
                     pRotWS = frameTransformsWS[pNI.tempIdx][2]
                     if correctScaledTransforms:
-                        locPS = pRotWS.invert().apply(
+                        temp = Torque_Math.Quaternion(pRotWS.x(), pRotWS.y(), pRotWS.z(), pRotWS.w())
+                        temp.inverse()
+                        locPS = temp.apply(
                             self.correctScaledOffset(locWS - pLocWS, parentStacks[i], frameTransformsWS))
                     else:
-                        locPS = pRotWS.invert().apply(locWS - pLocWS)
-                    rotPS = rotWS * pRotWS.invert()
+                        temp = Torque_Math.Quaternion(pRotWS.x(), pRotWS.y(), pRotWS.z(), pRotWS.w())
+                        temp.inverse()
+                        locPS = temp.apply(locWS - pLocWS)
+                    rotPS = rotWS * pRotWS.inverse()
                     frameTransformsPS.append([locPS, scale, rotPS])
                 i += 1
 

@@ -243,25 +243,52 @@ class BlenderShape(DtsShape):
         elif hasArmatureDeform and not (hasModifiers or (o.type in DtsGlobals.needDisplayDataTypes)):
             # print "mesh:", o.name, "has armature deform but no modifiers."
             # originalMesh = o.getData(False, True)
+            if o.type == "MESH":
+                originalMesh = o.data
             for modifier in o.modifiers:
                 print(modifier.type)
-                if modifier.type == "MULTIRES":
+                if modifier.type == 'MULTIRES':
                     originalMesh = modifier
 
             # get vertex weight info
             influences = {}
-            for v in originalMesh.verts:
-                influences[v.index] = originalMesh.getVertexInfluences(v.index)
+            for v in originalMesh.vertices:
+                # for k in v.groups.values():
+                #     Torque_Util.dump_writeln('Vertex %d has a weight of %f for bone %s' % (v.index, k.weight, o.vertex_groups[k.group].name))
+                influences[v.index] = v.groups.items()
 
-            groups = originalMesh.getVertGroupNames()
+            arm = bpy.data.objects['Armature']
+
+            # obj_verts = originalMesh.vertices
+            # obj_group_names = [g.name for g in o.vertex_groups]
+
+            # for x in obj_verts:
+            #     influences[x.index] = []
+
+            # for bone in arm.pose.bones:
+            #     if bone.name not in obj_group_names:
+            #         continue
+            #
+            #     gidx = o.vertex_groups[bone.name].index
+            #
+            #     bone_verts = [v for v in obj_verts if gidx in [g.group for g in v.groups]]
+            #
+            #     for v in bone_verts:
+            #         w = v.groups[gidx].weight
+            #         # influences[v.index].append([bone.name,w])
+            #         Torque_Util.dump_writeln('Vertex %d has a weight of %f for bone %s' % (v.index, w, bone.name))
+
+            groups = []
+            for gps in o.vertex_groups:
+                groups.append(gps.name)
 
             # -----------------------------
             # apply armature modifier
             try:
                 temp_obj = bpy.data.objects["DTSExpObj_Tmp"]
             except:
-                me = bpy.data.meshes.new()
-                temp_obj = bpy.data.objects.new(obName, me)
+                me = bpy.data.meshes.new("DTSExpMshObj_Tmp")
+                temp_obj = bpy.data.objects.new("DTSExpObj_Tmp", me)
             try:
                 mesh_data = bpy.data.meshes("DTSExpMshObj_Tmp")
             except:
@@ -283,7 +310,7 @@ class BlenderShape(DtsShape):
             # 		mesh_data.removeVertsFromGroup(group)
             o.vertex_groups.clear()
             # mesh_data.update()
-            o.update()
+            o.data.update()
 
 
         # add vertex weights back in
@@ -692,7 +719,7 @@ class BlenderShape(DtsShape):
                 bmesh = bound_obj.data
                 self.bounds.max = Vector(-10e30, -10e30, -10e30)
                 self.bounds.min = Vector(10e30, 10e30, 10e30)
-                for v in bmesh.verts:
+                for v in bmesh.vertices:
                     real_vert = matf.passPoint(v)
                     self.bounds.min[0] = min(self.bounds.min.x(), real_vert[0])
                     self.bounds.min[1] = min(self.bounds.min.y(), real_vert[1])
